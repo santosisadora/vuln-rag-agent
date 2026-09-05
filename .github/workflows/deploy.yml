@@ -44,7 +44,7 @@ jobs:
       - name: Build, tag, and push image to Amazon ECR
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          ECR_REPOSITORY: vuln-rag-agent
+          ECR_REPOSITORY: myprojects/vuln-rag-agent
           IMAGE_TAG: ${{ github.sha }} # Uses the unique git commit hash
         run: |
           # 1. Build the Docker image
