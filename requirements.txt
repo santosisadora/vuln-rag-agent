@@ -1,0 +1,16 @@
+# LangChain & LangGraph Ecosystem
+langchain-core
+langchain-google-genai
+langchain-chroma
+langgraph
+langgraph-checkpoint-sqlite
+langsmith
+
+# API & Web Server
+fastapi
+uvicorn
+pydantic
+httpx
+
+# Utilities
+python-dotenv
