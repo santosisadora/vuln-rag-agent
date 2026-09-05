@@ -24,7 +24,8 @@ jobs:
           LANGCHAIN_API_KEY: ${{ secrets.LANGCHAIN_API_KEY }}
           GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
           LANGCHAIN_TRACING_V2: "true"
-        run: python src/evaluate.py
+          PYTHONPATH: "."
+        run: python -m src.evaluate
 
       # --- NEW REAL AWS ECR DEPLOYMENT STEPS ---
 
