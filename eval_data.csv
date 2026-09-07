@@ -1,0 +1,4 @@
+inputs,ground_truth,context
+"What is our SLA for patching critical vulnerabilities?","Critical vulnerabilities must be patched within 24 hours."
+"Is our payment server vulnerable to CVE-2021-44228?","Yes, Payment-Gateway-01 is running a vulnerable version."
+"What is CVE-2024-3094?","It is a vulnerability related to the XZ Utils supply chain compromise."

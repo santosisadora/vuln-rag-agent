@@ -14,3 +14,7 @@ httpx
 
 # Utilities
 python-dotenv
+
+#Streamlit UI
+streamlit
+requests

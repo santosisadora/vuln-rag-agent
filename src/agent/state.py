@@ -15,3 +15,6 @@ class AgentState(TypedDict):
     final_ticket: Optional[RemediationTicket]
     # Routing flag indicating next action
     next_step: Optional[str]
+    #
+    access_granted: bool | None
+    asset_check: Optional[bool]
