@@ -1,10 +1,29 @@
+import os
 import json
 from fastapi import FastAPI
+from langchain_core.globals import set_llm_cache
+from langchain_community.cache import RedisSemanticCache
+from langchain_google_genai import GoogleGenerativeAIEmbeddings
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
 from langchain_core.messages import HumanMessage
 
 from src.agent.graph import app as agent_app
+
+# 1. Define the embedding model used to compare question similarity
+embeddings = GoogleGenerativeAIEmbeddings(model="models/embedding-001")
+
+# 2. Configure the Semantic Cache interceptor globally
+try:
+    set_llm_cache(RedisSemanticCache(
+        redis_url="redis://localhost:6379",
+        embedding=embeddings,
+        score_threshold=0.10  # Adjust threshold: lower is stricter similarity
+    ))
+    print("✅ Redis Semantic Cache Initialized")
+except Exception as e:
+    print(f"⚠️ Redis cache not available, running without cache: {e}")
+
 
 app = FastAPI(
     title="Enterprise Vulnerability Triage API",
