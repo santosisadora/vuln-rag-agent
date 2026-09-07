@@ -11,7 +11,7 @@ from src.schemas.ticket import RemediationTicket
 load_dotenv()
 
 # Initialize LLM & Vector Store
-llm = ChatGoogleGenerativeAI(model="gemini-3.6-flash", temperature=0)
+llm = ChatGoogleGenerativeAI(model="gemini-1.5-flash", temperature=0)
 embeddings = GoogleGenerativeAIEmbeddings(model="models/gemini-embedding-001")
 vectorstore = Chroma(
     persist_directory="./chroma_db",
