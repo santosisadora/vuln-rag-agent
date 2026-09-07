@@ -3,7 +3,7 @@ import json
 from fastapi import FastAPI
 from langchain_core.globals import set_llm_cache
 # from langchain_community.cache import RedisSemanticCache
-from langchain.cache import InMemoryCache
+from langchain_core.caches import InMemoryCache
 from langchain_google_genai import GoogleGenerativeAIEmbeddings
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
