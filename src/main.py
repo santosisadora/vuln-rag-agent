@@ -27,6 +27,7 @@ embeddings = GoogleGenerativeAIEmbeddings(model="models/embedding-001")
 
 # 2. Configure the Semantic Cache interceptor globally
 set_llm_cache(InMemoryCache())
+
 print("✅ In-Memory Cache Initialized")
 app = FastAPI(
     title="Enterprise Vulnerability Triage API",
