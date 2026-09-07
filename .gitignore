@@ -1,5 +1,35 @@
+# 1. Critical Secrets & Environment Variables
 .env
+.env.*
+!.env.example
+
+# 2. Virtual Environments
 venv/
+.venv/
+env/
+ENV/
+
+# 3. Python Cache & Bytecode
 __pycache__/
-chroma_db/
+*.py[cod]
+*$py.class
+*.so
+.pytest_cache/
+
+# 4. MLflow Local Runs & Data
+mlruns/
+mlartifacts/
+*.db
+
+# 5. IDEs & Editors (PyCharm / VSCode)
+.idea/
+.vscode/
+*.swp
+
+# 6. Operating System & Docker Local Files
+.DS_Store
+Thumbs.db
+
+# 7. Local Databases & Checkpoints
 checkpoints.sqlite
+chroma_db/
