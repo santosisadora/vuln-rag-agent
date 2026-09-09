@@ -1,5 +1,6 @@
 import os
 import json
+import traceback
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from slowapi import Limiter, _rate_limit_exceeded_handler
@@ -44,6 +45,8 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
 # ===============================
 
 class TriageRequest(BaseModel):
@@ -71,31 +74,44 @@ async def event_generator(payload: TriageRequest):
     else:
         inputs = {"messages": [HumanMessage(content=payload.query)]}
 
-    # astream_events(version="v2") allows us to listen to the graph in real-time
-    async for event in agent_app.astream_events(inputs, config=config, version="v2"):
-        kind = event.get("event")
-        name = event.get("name", "unknown")
+    try:
+        # astream_events(version="v2") allows us to listen to the graph in real-time
+        async for event in agent_app.astream_events(inputs, config=config, version="v2"):
+            kind = event.get("event")
+            name = event.get("name", "unknown")
 
-        # 1. Broadcast Tool Executions
-        if kind == "on_tool_start":
-            yield f"data: {json.dumps({'type': 'tool', 'content': f'Executing {name}...'})}\n\n"
+            # 1. Broadcast Tool Executions
+            if kind == "on_tool_start":
+                yield f"data: {json.dumps({'type': 'tool', 'content': f'Executing {name}...'})}\n\n"
 
-        # 2. Broadcast Node Transitions
-        elif kind == "on_chain_end" and name in ["router", "nvd_agent", "policy_agent", "formatter"]:
-            yield f"data: {json.dumps({'type': 'node', 'content': f'Node [{name}] completed.'})}\n\n"
+            # 2. Broadcast Node Transitions
+            elif kind == "on_chain_end" and name in ["router", "nvd_agent", "policy_agent", "formatter"]:
+                yield f"data: {json.dumps({'type': 'node', 'content': f'Node [{name}] completed.'})}\n\n"
 
-        # 3. Broadcast LLM Token Streaming
-        elif kind == "on_chat_model_stream":
-            chunk = event["data"]["chunk"].content
-            if chunk:
-                yield f"data: {json.dumps({'type': 'token', 'content': chunk})}\n\n"
+            # 3. Broadcast LLM Token Streaming
+            elif kind == "on_chat_model_stream":
+                chunk = event["data"]["chunk"].content
+                if chunk:
+                    yield f"data: {json.dumps({'type': 'token', 'content': chunk})}\n\n"
 
-    # Signal the client that the stream has completed cleanly
-    yield f"data: {json.dumps({'type': 'done'})}\n\n"
+        # Signal the client that the stream has completed cleanly
+        yield f"data: {json.dumps({'type': 'done'})}\n\n"
+
+    except Exception as e:
+        # 1. FORCE the exact error trace into the AWS Fargate CloudWatch logs immediately
+        print(f"FATAL STREAM ERROR: {repr(e)}", flush=True)
+        traceback.print_exc()
+
+        # 2. Yield the error back into the UI chat bubble so it doesn't fail silently
+        error_msg = f"\n\n**⚠️ Backend Crash:** {str(e)}\n\n*Check AWS CloudWatch Logs for full traceback.*"
+        yield f"data: {json.dumps({'type': 'token', 'content': error_msg})}\n\n"
+
+        # 3. Close the stream cleanly so the frontend JS doesn't hang
+        yield f"data: {json.dumps({'type': 'done'})}\n\n"
 
 
 @app.post("/triage/stream")
-@limiter.limit("5/minute") # Protects your API quota! Max 5 requests per minute per IP.
+@limiter.limit("5/minute")  # Protects your API quota! Max 5 requests per minute per IP.
 async def stream_triage(request: Request, payload: TriageRequest):
     """Initiates the vulnerability triage agent and streams the response."""
     return StreamingResponse(event_generator(payload), media_type="text/event-stream")
