@@ -4,15 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="cd401061-9d7e-4abb-9b3f-6df7ffd9ac1f" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/vuln-rag-agent.iml" beforeDir="false" />
+    <list default="true" id="cd401061-9d7e-4abb-9b3f-6df7ffd9ac1f" name="Changes" comment="feat: added CORSMiddleware to allow browser UI to connect and updated rate limiter for API security.">
+      <change afterPath="$PROJECT_DIR$/_redirects" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend.py" beforeDir="false" afterPath="$PROJECT_DIR$/frontend.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/run_evals.py" beforeDir="false" afterPath="$PROJECT_DIR$/run_evals.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/agent/nodes.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/agent/nodes.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/evaluate.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/evaluate.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/main.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -85,9 +79,22 @@
       <option name="presentableId" value="Default" />
       <updated>1788618274856</updated>
     </task>
+    <task id="LOCAL-00001" summary="feat: added CORSMiddleware to allow browser UI to connect and updated rate limiter for API security.">
+      <option name="closed" value="true" />
+      <created>1788977879377</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1788977879377</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="feat: added CORSMiddleware to allow browser UI to connect and updated rate limiter for API security." />
+    <option name="LAST_COMMIT_MESSAGE" value="feat: added CORSMiddleware to allow browser UI to connect and updated rate limiter for API security." />
   </component>
 </project>

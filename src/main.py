@@ -38,7 +38,7 @@ app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 # Add CORS Middleware to allow the browser UI to connect
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["https://isadora-santos-vuln-rag-agent.netlify.app",
+    allow_origins=["http://isadora-santos-vuln-rag-agent.s3-website-us-east-1.amazonaws.com",
                    "http://localhost:8501"],
     allow_credentials=True,
     allow_methods=["*"],
