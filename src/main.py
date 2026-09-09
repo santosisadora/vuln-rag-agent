@@ -1,6 +1,8 @@
 import os
 import json
 import traceback
+import subprocess
+from contextlib import asynccontextmanager
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from slowapi import Limiter, _rate_limit_exceeded_handler
@@ -15,6 +17,27 @@ from langchain_core.messages import HumanMessage
 
 from src.agent.graph import app as agent_app
 
+
+# --- AUTOMATIC VECTOR DB REBUILD ---
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """Executes startup and shutdown logic for the API."""
+    print("🚀 Container Starting: Rebuilding ephemeral ChromaDB...")
+    try:
+        # Automatically run your ingest script to parse the Markdown SLA policies
+        # and load them into the fresh ChromaDB instance on boot.
+        subprocess.run(["python", "-m", "src.rag.ingest"], check=True)
+        print("✅ ChromaDB rebuilt successfully!")
+    except Exception as e:
+        print(f"⚠️ Warning: Failed to rebuild ChromaDB on startup: {e}")
+
+    yield  # The FastAPI server runs while yielding
+
+    print("🛑 Container Shutting Down.")
+
+
+# -----------------------------------
+
 # 1. Define the embedding model used to compare question similarity
 embeddings = GoogleGenerativeAIEmbeddings(model="models/embedding-001")
 
@@ -28,7 +51,8 @@ limiter = Limiter(key_func=get_remote_address)
 app = FastAPI(
     title="Enterprise Vulnerability Triage API",
     version="1.0.0",
-    description="Agentic RAG pipeline for SecOps vulnerability management."
+    description="Agentic RAG pipeline for SecOps vulnerability management.",
+    lifespan=lifespan  # Attach the startup script here
 )
 
 # === SECURITY CONFIGURATIONS ===
@@ -75,24 +99,22 @@ async def event_generator(payload: TriageRequest):
         inputs = {"messages": [HumanMessage(content=payload.query)]}
 
     try:
-        # astream_events(version="v2") allows us to listen to the graph in real-time
-        async for event in agent_app.astream_events(inputs, config=config, version="v2"):
-            kind = event.get("event")
-            name = event.get("name", "unknown")
+        # Switch from astream_events to standard astream to grab node outputs reliably
+        async for output in agent_app.astream(inputs, config=config, stream_mode="updates"):
 
-            # 1. Broadcast Tool Executions
-            if kind == "on_tool_start":
-                yield f"data: {json.dumps({'type': 'tool', 'content': f'Executing {name}...'})}\n\n"
+            # Loop through each node that executed in this step
+            for node_name, node_state in output.items():
 
-            # 2. Broadcast Node Transitions
-            elif kind == "on_chain_end" and name in ["router", "nvd_agent", "policy_agent", "formatter"]:
-                yield f"data: {json.dumps({'type': 'node', 'content': f'Node [{name}] completed.'})}\n\n"
+                # 1. Broadcast Node Transitions so UI shows progress
+                yield f"data: {json.dumps({'type': 'node', 'content': f'Node [{node_name}] completed.'})}\n\n"
 
-            # 3. Broadcast LLM Token Streaming
-            elif kind == "on_chat_model_stream":
-                chunk = event["data"]["chunk"].content
-                if chunk:
-                    yield f"data: {json.dumps({'type': 'token', 'content': chunk})}\n\n"
+                # 2. Grab the final output ONLY from the formatter node
+                if node_name == "formatter":
+                    # Extract the final AI message content
+                    final_text = node_state["messages"][-1].content
+
+                    # Yield it as a single chunk to guarantee the UI renders it
+                    yield f"data: {json.dumps({'type': 'token', 'content': final_text})}\n\n"
 
         # Signal the client that the stream has completed cleanly
         yield f"data: {json.dumps({'type': 'done'})}\n\n"
