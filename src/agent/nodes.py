@@ -11,7 +11,7 @@ from src.schemas.ticket import RemediationTicket
 load_dotenv()
 
 # Initialize LLM & Vector Store
-llm = ChatGoogleGenerativeAI(model="gemini-3.5-flash", temperature=0)
+llm = ChatGoogleGenerativeAI(model="gemini-3.7-flash", temperature=0)
 embeddings = GoogleGenerativeAIEmbeddings(model="models/gemini-embedding-001")
 vectorstore = Chroma(
     persist_directory="./chroma_db",
@@ -26,19 +26,25 @@ def router_node(state: AgentState) -> dict:
 
     # Simple regex extraction for CVE IDs (e.g. CVE-2024-3094)
     cve_match = re.search(r"CVE-\d{4}-\d{4,7}", last_message, re.IGNORECASE)
-    cve_id = cve_match.group(0).upper() if cve_match else state.get("cve_id")
+    cve_id = cve_match.group(0).upper() if cve_match else None
 
     # Routing Logic for Case 1, 2, and 3!
     if "asset" in last_message or "server" in last_message:
         next_step = "asset_check"  # Case 3: Hit the asset database
-    elif cve_id and not state.get("cve_intel"):
+    elif cve_id:
         next_step = "fetch_nvd"  # Case 1: Vulnerability lookup
-    elif not state.get("policy_context"):
-        next_step = "access_check"  # Case 2: Internal document lookup
     else:
-        next_step = "format_ticket"
+        next_step = "access_check"  # Case 2: Internal document lookup
 
-    return {"cve_id": cve_id, "next_step": next_step}
+    # Reset all per-query state so stale data from a previous turn
+    # never causes the router to skip retrieval steps on the next query.
+    return {
+        "cve_id": cve_id,
+        "next_step": next_step,
+        "cve_intel": None,
+        "policy_context": None,
+        "access_granted": None,
+    }
 
 
 def access_check_node(state: AgentState) -> dict:
@@ -48,13 +54,14 @@ def access_check_node(state: AgentState) -> dict:
     return {"access_granted": True, "next_step": "retrieve_policy"}
 
 
-def nvd_node(state: AgentState) -> dict:
+async def nvd_node(state: AgentState) -> dict:
     """Calls the NIST NVD API tool to retrieve real-time vulnerability facts."""
     cve_id = state.get("cve_id")
     if not cve_id:
         return {"cve_intel": "No CVE ID specified for NVD lookup.", "next_step": "retrieve_policy"}
 
-    intel = fetch_nvd_cve_data.invoke({"cve_id": cve_id})
+    # Use ainvoke so the HTTP call doesn't block the async event loop
+    intel = await fetch_nvd_cve_data.ainvoke({"cve_id": cve_id})
     return {"cve_intel": intel, "next_step": "retrieve_policy"}
 
 
@@ -81,7 +88,7 @@ def policy_node(state: AgentState) -> dict:
     return {"policy_context": context, "next_step": "format_ticket"}
 
 
-def formatter_node(state: AgentState) -> dict:
+async def formatter_node(state: AgentState) -> dict:
     """Generates the final Markdown report for the SecOps analyst."""
     prompt = (
         "You are an enterprise SecOps Triage Assistant. Analyze the vulnerability data and internal policies.\n"
@@ -93,7 +100,7 @@ def formatter_node(state: AgentState) -> dict:
         "Do NOT output raw JSON."
     )
 
-    response = llm.invoke([
+    response = await llm.ainvoke([
         SystemMessage(content="You are a senior SecOps assistant. You format data into beautiful, readable Markdown."),
         HumanMessage(content=prompt)
     ])
@@ -108,7 +115,7 @@ def asset_check_node(state: AgentState) -> dict:
     return {"cve_intel": intel, "next_step": "draft_ticket"}
 
 
-def draft_ticket_node(state: AgentState) -> dict:
+async def draft_ticket_node(state: AgentState) -> dict:
     """Drafts the ticket payload and streams a preview for human approval."""
     prompt = (
         f"Based on this intel: {state.get('cve_intel')}\n\n"
@@ -120,7 +127,7 @@ def draft_ticket_node(state: AgentState) -> dict:
     )
 
     # Use the standard LLM so it streams the beautiful Markdown to the UI!
-    response = llm.invoke([
+    response = await llm.ainvoke([
         SystemMessage(content="You are a SecOps ticket drafter."),
         HumanMessage(content=prompt)
     ])
@@ -128,11 +135,11 @@ def draft_ticket_node(state: AgentState) -> dict:
     return {"messages": [response]}
 
 
-def create_ticket_node(state: AgentState) -> dict:
+async def create_ticket_node(state: AgentState) -> dict:
     """Executes ONLY after HITL approval."""
     # We use the LLM to stream a final confirmation message.
     # (In a real app, this is where you would POST the strict JSON to Jira/ServiceNow)
-    response = llm.invoke([
+    response = await llm.ainvoke([
         HumanMessage(
             content="The user approved the ticket. Write a short, 1-sentence confirmation that Ticket #SEC-9942 has been generated and pushed to Jira.")
     ])

@@ -53,7 +53,7 @@ def predict(inputs):
 
 
 # 2. Configure the Gemini Judge
-judge_llm = ChatGoogleGenerativeAI(model="gemini-3.5-flash")
+judge_llm = ChatGoogleGenerativeAI(model="gemini-3.7-flash")
 
 
 

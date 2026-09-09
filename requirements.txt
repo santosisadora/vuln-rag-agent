@@ -21,3 +21,5 @@ requests
 
 langchain-community
 redis
+
+slowapi>=0.1.9

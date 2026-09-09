@@ -52,7 +52,7 @@ def create_golden_dataset():
 
 def qa_evaluator(run, example) -> dict:
     """An LLM-as-a-judge evaluator that grades the generated ticket."""
-    llm = ChatGoogleGenerativeAI(model="gemini-3.5-flash", temperature=0)
+    llm = ChatGoogleGenerativeAI(model="gemini-3.7-flash", temperature=0)
 
     actual = run.outputs.get("actual_ticket", "")
     expected = example.outputs
