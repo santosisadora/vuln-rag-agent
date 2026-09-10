@@ -4,9 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="cd401061-9d7e-4abb-9b3f-6df7ffd9ac1f" name="Changes" comment="fix: exception handling">
+    <list default="true" id="cd401061-9d7e-4abb-9b3f-6df7ffd9ac1f" name="Changes" comment="fix: updated lifespan context manager for automatic ChromaDB rebuild and streamlined API description.">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/main.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/agent/nodes.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/agent/nodes.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -14,7 +14,7 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="EmbeddingIndexingInfo">
-    <option name="cachedIndexableFilesCount" value="13299" />
+    <option name="cachedIndexableFilesCount" value="48" />
     <option name="fileBasedEmbeddingIndicesEnabled" value="true" />
   </component>
   <component name="Git.Settings">
@@ -38,23 +38,23 @@
   </component>
   <component name="NextEditCompletionFeaturesState">
     <decayedCancelled>
-      <entry key="MS100" value="1.0011775467067292" />
-      <entry key="MS500" value="1.2595348176357644" />
-      <entry key="S2" value="1.713754578485043" />
-      <entry key="S5" value="1.8738151353325834" />
-      <entry key="S10" value="1.9347807953379141" />
-      <entry key="S30" value="1.977769742722337" />
-      <entry key="S60" value="1.9888224020127867" />
-      <entry key="M2" value="1.9943954957725758" />
-      <entry key="M5" value="1.9977544177652193" />
-      <entry key="M10" value="1.9988810590497885" />
-      <entry key="M15" value="1.9995227206381134" />
-      <entry key="M30" value="2.0161120180821306" />
-      <entry key="H1" value="2.1282129574166935" />
-      <entry key="H2" value="2.35823618429069" />
-      <entry key="H4" value="2.5985597567397383" />
-      <entry key="D1" value="2.9180222832069727" />
-      <entry key="W1" value="2.9878553468764566" />
+      <entry key="MS100" value="1.000000003674003" />
+      <entry key="MS500" value="1.0205606121460327" />
+      <entry key="S2" value="1.4071598393763032" />
+      <entry key="S5" value="2.065506639894024" />
+      <entry key="S10" value="2.8651984562241317" />
+      <entry key="S30" value="4.030477624759143" />
+      <entry key="S60" value="4.47181704354562" />
+      <entry key="M2" value="4.723978585583046" />
+      <entry key="M5" value="4.9030723398635185" />
+      <entry key="M10" value="5.124450020751456" />
+      <entry key="M15" value="5.365942211689034" />
+      <entry key="M30" value="5.887282993616542" />
+      <entry key="H1" value="6.417428250110313" />
+      <entry key="H2" value="6.926259562531603" />
+      <entry key="H4" value="7.349056298217403" />
+      <entry key="D1" value="7.8694287560128595" />
+      <entry key="W1" value="7.980698238340911" />
     </decayedCancelled>
     <decayedSelected>
       <entry key="MS100" value="0.0" />
@@ -76,23 +76,23 @@
       <entry key="W1" value="0.0" />
     </decayedSelected>
     <decayedShown>
-      <entry key="MS100" value="0.9603858950625662" />
-      <entry key="MS500" value="1.2487451874023099" />
-      <entry key="S2" value="1.7099478167975866" />
-      <entry key="S5" value="1.87213616034737" />
-      <entry key="S10" value="1.9339115450443993" />
-      <entry key="S30" value="1.9774729967363065" />
-      <entry key="S60" value="1.988673129659718" />
-      <entry key="M2" value="1.9943206328516205" />
-      <entry key="M5" value="1.9977244179327576" />
-      <entry key="M10" value="1.9988660499661186" />
-      <entry key="M15" value="1.9995127111104563" />
-      <entry key="M30" value="2.0161069685944097" />
-      <entry key="H1" value="2.128210281583247" />
-      <entry key="H2" value="2.3582346913625325" />
-      <entry key="H4" value="2.598558929299357" />
-      <entry key="D1" value="2.9180221273599254" />
-      <entry key="W1" value="2.9878553240523535" />
+      <entry key="MS100" value="0.9659363324736987" />
+      <entry key="MS500" value="1.0135110855915217" />
+      <entry key="S2" value="1.4047333883228772" />
+      <entry key="S5" value="2.0641291063791267" />
+      <entry key="S10" value="2.864277810283018" />
+      <entry key="S30" value="4.030060390005516" />
+      <entry key="S60" value="4.471587670735851" />
+      <entry key="M2" value="4.723857980164668" />
+      <entry key="M5" value="4.903022324730036" />
+      <entry key="M10" value="5.124423509416888" />
+      <entry key="M15" value="5.365923364206417" />
+      <entry key="M30" value="5.8872722814734" />
+      <entry key="H1" value="6.41742222748101" />
+      <entry key="H2" value="6.926256223958862" />
+      <entry key="H4" value="7.349054490953512" />
+      <entry key="D1" value="7.869428426256942" />
+      <entry key="W1" value="7.980698190357623" />
     </decayedShown>
   </component>
   <component name="ProjectColorInfo">{
@@ -161,7 +161,15 @@
       <option name="project" value="LOCAL" />
       <updated>1788991068150</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="fix: updated lifespan context manager for automatic ChromaDB rebuild and streamlined API description.">
+      <option name="closed" value="true" />
+      <created>1788993140748</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1788993140748</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -171,6 +179,7 @@
     <MESSAGE value="feat: added CORSMiddleware to allow browser UI to connect and updated rate limiter for API security." />
     <MESSAGE value="fix: update CORS" />
     <MESSAGE value="fix: exception handling" />
-    <option name="LAST_COMMIT_MESSAGE" value="fix: exception handling" />
+    <MESSAGE value="fix: updated lifespan context manager for automatic ChromaDB rebuild and streamlined API description." />
+    <option name="LAST_COMMIT_MESSAGE" value="fix: updated lifespan context manager for automatic ChromaDB rebuild and streamlined API description." />
   </component>
 </project>

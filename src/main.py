@@ -108,10 +108,14 @@ async def event_generator(payload: TriageRequest):
                 # 1. Broadcast Node Transitions so UI shows progress
                 yield f"data: {json.dumps({'type': 'node', 'content': f'Node [{node_name}] completed.'})}\n\n"
 
-                # 2. Grab the final output ONLY from the formatter node
-                if node_name == "formatter":
-                    # Extract the final AI message content
-                    final_text = node_state["messages"][-1].content
+                # 2. Grab the final output from the formatter OR the create_ticket node
+                if node_name in ["formatter", "create_ticket"]:
+                    try:
+                        # Try to extract standard LangChain message content
+                        final_text = node_state["messages"][-1].content
+                    except (KeyError, IndexError, AttributeError):
+                        # Fallback if the create_ticket node returns a custom dictionary instead of standard messages
+                        final_text = f"✅ **Action Approved:** Node `{node_name}` completed successfully."
 
                     # Yield it as a single chunk to guarantee the UI renders it
                     yield f"data: {json.dumps({'type': 'token', 'content': final_text})}\n\n"

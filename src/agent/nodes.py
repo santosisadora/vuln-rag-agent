@@ -90,14 +90,22 @@ def policy_node(state: AgentState) -> dict:
 
 async def formatter_node(state: AgentState) -> dict:
     """Generates the final Markdown report for the SecOps analyst."""
+
+    # Grab the data from the state, defaulting to "None" if empty
+    cve_data = state.get('cve_intel', 'None')
+    policy_data = state.get('policy_context', 'None')
+
     prompt = (
-        "You are an enterprise SecOps Triage Assistant. Analyze the vulnerability data and internal policies.\n"
-        f"Vulnerability Data (NVD):\n{state.get('cve_intel')}\n\n"
-        f"Internal Policy Context:\n{state.get('policy_context')}\n\n"
-        "Provide a clear, highly scannable Markdown report for a security analyst. "
-        "Use headers (e.g., '### 🚨 Vulnerability Report'), bullet points, and bold text. "
-        "Clearly section out the Description, Severity, CVSS Score, and Required Actions (with SLA deadlines). "
-        "Do NOT output raw JSON."
+        "You are an enterprise SecOps Triage Assistant. Analyze the provided context to answer the user's request.\n\n"
+        f"Vulnerability Data (NVD):\n{cve_data}\n\n"
+        f"Internal Policy Context:\n{policy_data}\n\n"
+        "INSTRUCTIONS FOR FORMATTING:\n"
+        "1. If the user asked about a specific vulnerability or CVE, output a highly scannable Markdown '🚨 Vulnerability Report'. "
+        "Clearly section out the Description, Severity, CVSS Score, and Required Actions (with SLA deadlines).\n"
+        "2. If the user asked a general question about internal policies, SLAs, or concepts (and no specific CVE is being analyzed), "
+        "DO NOT use the strict Vulnerability Report template. Instead, provide a clear, conversational, well-structured Markdown response "
+        "that directly answers their question using the Internal Policy Context.\n\n"
+        "Do NOT output raw JSON. Use bullet points and bold text where appropriate for readability."
     )
 
     response = await llm.ainvoke([
