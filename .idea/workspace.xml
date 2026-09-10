@@ -4,9 +4,11 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="cd401061-9d7e-4abb-9b3f-6df7ffd9ac1f" name="Changes" comment="fix: updated lifespan context manager for automatic ChromaDB rebuild and streamlined API description.">
+    <list default="true" id="cd401061-9d7e-4abb-9b3f-6df7ffd9ac1f" name="Changes" comment="fix: updated formatter node to handle both formatter and create_ticket nodes and added fallback for custom dictionaries">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/run_evals.py" beforeDir="false" afterPath="$PROJECT_DIR$/run_evals.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/agent/nodes.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/agent/nodes.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/evaluate.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/evaluate.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -38,23 +40,23 @@
   </component>
   <component name="NextEditCompletionFeaturesState">
     <decayedCancelled>
-      <entry key="MS100" value="1.000000003674003" />
-      <entry key="MS500" value="1.0205606121460327" />
-      <entry key="S2" value="1.4071598393763032" />
-      <entry key="S5" value="2.065506639894024" />
-      <entry key="S10" value="2.8651984562241317" />
-      <entry key="S30" value="4.030477624759143" />
-      <entry key="S60" value="4.47181704354562" />
-      <entry key="M2" value="4.723978585583046" />
-      <entry key="M5" value="4.9030723398635185" />
-      <entry key="M10" value="5.124450020751456" />
-      <entry key="M15" value="5.365942211689034" />
-      <entry key="M30" value="5.887282993616542" />
-      <entry key="H1" value="6.417428250110313" />
-      <entry key="H2" value="6.926259562531603" />
-      <entry key="H4" value="7.349056298217403" />
-      <entry key="D1" value="7.8694287560128595" />
-      <entry key="W1" value="7.980698238340911" />
+      <entry key="MS100" value="1.0" />
+      <entry key="MS500" value="1.0000002243104245" />
+      <entry key="S2" value="1.0219261705169562" />
+      <entry key="S5" value="1.246891355677741" />
+      <entry key="S10" value="1.6399592273971595" />
+      <entry key="S30" value="2.3339831857182167" />
+      <entry key="S60" value="2.6280143529777784" />
+      <entry key="M2" value="2.8030575682885095" />
+      <entry key="M5" value="2.9440546870664237" />
+      <entry key="M10" value="3.1190433136224582" />
+      <entry key="M15" value="3.2675125057159033" />
+      <entry key="M30" value="3.52941154319779" />
+      <entry key="H1" value="3.730169314607599" />
+      <entry key="H2" value="3.8721965170010635" />
+      <entry key="H4" value="4.290424669180741" />
+      <entry key="D1" value="8.759488942081225" />
+      <entry key="W1" value="11.428533021320714" />
     </decayedCancelled>
     <decayedSelected>
       <entry key="MS100" value="0.0" />
@@ -76,23 +78,23 @@
       <entry key="W1" value="0.0" />
     </decayedSelected>
     <decayedShown>
-      <entry key="MS100" value="0.9659363324736987" />
-      <entry key="MS500" value="1.0135110855915217" />
-      <entry key="S2" value="1.4047333883228772" />
-      <entry key="S5" value="2.0641291063791267" />
-      <entry key="S10" value="2.864277810283018" />
-      <entry key="S30" value="4.030060390005516" />
-      <entry key="S60" value="4.471587670735851" />
-      <entry key="M2" value="4.723857980164668" />
-      <entry key="M5" value="4.903022324730036" />
-      <entry key="M10" value="5.124423509416888" />
-      <entry key="M15" value="5.365923364206417" />
-      <entry key="M30" value="5.8872722814734" />
-      <entry key="H1" value="6.41742222748101" />
-      <entry key="H2" value="6.926256223958862" />
-      <entry key="H4" value="7.349054490953512" />
-      <entry key="D1" value="7.869428426256942" />
-      <entry key="W1" value="7.980698190357623" />
+      <entry key="MS100" value="0.8350879194283694" />
+      <entry key="MS500" value="0.9645983988640592" />
+      <entry key="S2" value="1.0127027938712707" />
+      <entry key="S5" value="1.2418935474925201" />
+      <entry key="S10" value="1.635912235780934" />
+      <entry key="S30" value="2.3315273693613365" />
+      <entry key="S60" value="2.6265324007828386" />
+      <entry key="M2" value="2.80223919960182" />
+      <entry key="M5" value="2.9437059033419573" />
+      <entry key="M10" value="3.1188632653656456" />
+      <entry key="M15" value="3.267390301616083" />
+      <entry key="M30" value="3.5293487841795543" />
+      <entry key="H1" value="3.7301373455865314" />
+      <entry key="H2" value="3.872180346057379" />
+      <entry key="H4" value="4.290416448801245" />
+      <entry key="D1" value="8.759487379769435" />
+      <entry key="W1" value="11.428532781843835" />
     </decayedShown>
   </component>
   <component name="ProjectColorInfo">{
@@ -169,7 +171,15 @@
       <option name="project" value="LOCAL" />
       <updated>1788993140748</updated>
     </task>
-    <option name="localTasksCounter" value="5" />
+    <task id="LOCAL-00005" summary="fix: updated formatter node to handle both formatter and create_ticket nodes and added fallback for custom dictionaries">
+      <option name="closed" value="true" />
+      <created>1789053915939</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1789053915939</updated>
+    </task>
+    <option name="localTasksCounter" value="6" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -180,6 +190,7 @@
     <MESSAGE value="fix: update CORS" />
     <MESSAGE value="fix: exception handling" />
     <MESSAGE value="fix: updated lifespan context manager for automatic ChromaDB rebuild and streamlined API description." />
-    <option name="LAST_COMMIT_MESSAGE" value="fix: updated lifespan context manager for automatic ChromaDB rebuild and streamlined API description." />
+    <MESSAGE value="fix: updated formatter node to handle both formatter and create_ticket nodes and added fallback for custom dictionaries" />
+    <option name="LAST_COMMIT_MESSAGE" value="fix: updated formatter node to handle both formatter and create_ticket nodes and added fallback for custom dictionaries" />
   </component>
 </project>
