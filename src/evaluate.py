@@ -1,6 +1,7 @@
 import os
+import asyncio
 from dotenv import load_dotenv
-from langsmith import Client, evaluate
+from langsmith import Client, aevaluate
 from langchain_google_genai import ChatGoogleGenerativeAI
 from src.agent.graph import app
 from langchain_core.messages import HumanMessage
@@ -9,19 +10,24 @@ load_dotenv()
 client = Client()
 
 
-def predict_ticket(inputs: dict) -> dict:
+async def predict_ticket(inputs: dict) -> dict:
     """Wrapper to run the graph and automatically bypass the HITL pause for testing."""
     config = {"configurable": {"thread_id": f"eval-{os.urandom(4).hex()}"}}
 
-    # 1. Run until the HITL breakpoint
-    for _ in app.stream({"messages": [HumanMessage(content=inputs["query"])]}, config=config):
+    # 1. Run until the HITL breakpoint using astream
+    async for _ in app.astream({"messages": [HumanMessage(content=inputs["query"])]}, config=config):
         pass
 
     # 2. Automatically resume (simulating human approval) to get the final ticket
     final_output = "No ticket generated"
-    for event in app.stream(None, config=config):
+    async for event in app.astream(None, config=config):
         if "formatter" in event:
-            final_output = event["formatter"]["final_ticket"].model_dump_json()
+            # Safely handle the output depending on how your formatter state is structured
+            try:
+                final_output = event["formatter"].get("final_ticket", "No ticket found").model_dump_json()
+            except AttributeError:
+                # Fallback if the output is not a Pydantic model
+                final_output = str(event["formatter"])
 
     return {"actual_ticket": final_output}
 
@@ -64,17 +70,19 @@ def qa_evaluator(run, example) -> dict:
         "Respond strictly with 'PASS' or 'FAIL'."
     )
 
-    result = llm.invoke(prompt).content.strip()
+    # Force cast to string before calling strip() to avoid the list attribute error
+    result = str(llm.invoke(prompt).content).strip()
     score = 1 if "PASS" in result else 0
     return {"key": "sla_compliance_score", "score": score}
 
 
-if __name__ == "__main__":
+async def run_evaluations():
+    """Asynchronous wrapper to run the LangSmith evaluation."""
     dataset_name = create_golden_dataset()
     print("\nStarting automated LangSmith evaluation...")
 
-    # Run the evaluation pipeline
-    evaluate(
+    # Run the asynchronous evaluation pipeline
+    await aevaluate(
         predict_ticket,
         data=dataset_name,
         evaluators=[qa_evaluator],
@@ -82,3 +90,8 @@ if __name__ == "__main__":
         metadata={"environment": "ci-cd-test"}
     )
     print("\nEvaluation complete! Check your LangSmith dashboard.")
+
+
+if __name__ == "__main__":
+    # Execute the async evaluation workflow
+    asyncio.run(run_evaluations())

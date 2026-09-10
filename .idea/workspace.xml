@@ -4,11 +4,8 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="cd401061-9d7e-4abb-9b3f-6df7ffd9ac1f" name="Changes" comment="fix: updated formatter node to handle both formatter and create_ticket nodes and added fallback for custom dictionaries">
+    <list default="true" id="cd401061-9d7e-4abb-9b3f-6df7ffd9ac1f" name="Changes" comment="fix: updated gemini model version and llm for evaluation.">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/run_evals.py" beforeDir="false" afterPath="$PROJECT_DIR$/run_evals.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/agent/nodes.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/agent/nodes.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/evaluate.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/evaluate.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -41,22 +38,22 @@
   <component name="NextEditCompletionFeaturesState">
     <decayedCancelled>
       <entry key="MS100" value="1.0" />
-      <entry key="MS500" value="1.0000002243104245" />
-      <entry key="S2" value="1.0219261705169562" />
-      <entry key="S5" value="1.246891355677741" />
-      <entry key="S10" value="1.6399592273971595" />
-      <entry key="S30" value="2.3339831857182167" />
-      <entry key="S60" value="2.6280143529777784" />
-      <entry key="M2" value="2.8030575682885095" />
-      <entry key="M5" value="2.9440546870664237" />
-      <entry key="M10" value="3.1190433136224582" />
-      <entry key="M15" value="3.2675125057159033" />
-      <entry key="M30" value="3.52941154319779" />
-      <entry key="H1" value="3.730169314607599" />
-      <entry key="H2" value="3.8721965170010635" />
-      <entry key="H4" value="4.290424669180741" />
-      <entry key="D1" value="8.759488942081225" />
-      <entry key="W1" value="11.428533021320714" />
+      <entry key="MS500" value="1.0000000944417489" />
+      <entry key="S2" value="1.017583272886978" />
+      <entry key="S5" value="1.2224577209345473" />
+      <entry key="S10" value="1.6732587725462547" />
+      <entry key="S30" value="2.972537554598392" />
+      <entry key="S60" value="3.76521110173509" />
+      <entry key="M2" value="4.312759697077983" />
+      <entry key="M5" value="4.729997261661914" />
+      <entry key="M10" value="5.004720757310028" />
+      <entry key="M15" value="5.187688646183592" />
+      <entry key="M30" value="5.48643918020588" />
+      <entry key="H1" value="5.707530196872141" />
+      <entry key="H2" value="5.860473544583319" />
+      <entry key="H4" value="6.283986541096629" />
+      <entry key="D1" value="10.757394535187029" />
+      <entry key="W1" value="13.4281466902273" />
     </decayedCancelled>
     <decayedSelected>
       <entry key="MS100" value="0.0" />
@@ -78,23 +75,23 @@
       <entry key="W1" value="0.0" />
     </decayedSelected>
     <decayedShown>
-      <entry key="MS100" value="0.8350879194283694" />
-      <entry key="MS500" value="0.9645983988640592" />
-      <entry key="S2" value="1.0127027938712707" />
-      <entry key="S5" value="1.2418935474925201" />
-      <entry key="S10" value="1.635912235780934" />
-      <entry key="S30" value="2.3315273693613365" />
-      <entry key="S60" value="2.6265324007828386" />
-      <entry key="M2" value="2.80223919960182" />
-      <entry key="M5" value="2.9437059033419573" />
-      <entry key="M10" value="3.1188632653656456" />
-      <entry key="M15" value="3.267390301616083" />
-      <entry key="M30" value="3.5293487841795543" />
-      <entry key="H1" value="3.7301373455865314" />
-      <entry key="H2" value="3.872180346057379" />
-      <entry key="H4" value="4.290416448801245" />
-      <entry key="D1" value="8.759487379769435" />
-      <entry key="W1" value="11.428532781843835" />
+      <entry key="MS100" value="0.9659363289248456" />
+      <entry key="MS500" value="0.993092589226428" />
+      <entry key="S2" value="1.0158210764763889" />
+      <entry key="S5" value="1.2215308744002331" />
+      <entry key="S10" value="1.672195643235924" />
+      <entry key="S30" value="2.9710618716832005" />
+      <entry key="S60" value="3.7640363410214945" />
+      <entry key="M2" value="4.312009566049277" />
+      <entry key="M5" value="4.729647888782578" />
+      <entry key="M10" value="5.004535060410707" />
+      <entry key="M15" value="5.187561425725317" />
+      <entry key="M30" value="5.486373263411598" />
+      <entry key="H1" value="5.7074964793973235" />
+      <entry key="H2" value="5.860456455744556" />
+      <entry key="H4" value="6.283977850759665" />
+      <entry key="D1" value="10.757392893010485" />
+      <entry key="W1" value="13.428146439297546" />
     </decayedShown>
   </component>
   <component name="ProjectColorInfo">{
@@ -179,7 +176,15 @@
       <option name="project" value="LOCAL" />
       <updated>1789053915939</updated>
     </task>
-    <option name="localTasksCounter" value="6" />
+    <task id="LOCAL-00006" summary="fix: updated gemini model version and llm for evaluation.">
+      <option name="closed" value="true" />
+      <created>1789055510581</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1789055510581</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -191,6 +196,7 @@
     <MESSAGE value="fix: exception handling" />
     <MESSAGE value="fix: updated lifespan context manager for automatic ChromaDB rebuild and streamlined API description." />
     <MESSAGE value="fix: updated formatter node to handle both formatter and create_ticket nodes and added fallback for custom dictionaries" />
-    <option name="LAST_COMMIT_MESSAGE" value="fix: updated formatter node to handle both formatter and create_ticket nodes and added fallback for custom dictionaries" />
+    <MESSAGE value="fix: updated gemini model version and llm for evaluation." />
+    <option name="LAST_COMMIT_MESSAGE" value="fix: updated gemini model version and llm for evaluation." />
   </component>
 </project>
