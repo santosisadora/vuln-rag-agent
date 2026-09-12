@@ -12,6 +12,9 @@ WORKDIR /app
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
+# Copy the knowledge base documents (change 'data/' if your folder is named differently)
+COPY data/ data/
+
 # Copy the application source code
 COPY src/ src/
 

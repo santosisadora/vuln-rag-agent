@@ -1,20 +1,15 @@
-import sqlite3
 from langgraph.graph import StateGraph, START, END
-
-
-#from langgraph.checkpoint.sqlite import SqliteSaver
-from langgraph.checkpoint.memory import MemorySaver
+from langgraph.checkpoint.postgres.aio import AsyncPostgresSaver
 
 from src.agent.state import AgentState
 from src.agent.nodes import router_node, nvd_node, policy_node, formatter_node, access_check_node, asset_check_node, draft_ticket_node, create_ticket_node
-
 
 def route_next(state: AgentState) -> str:
     """Conditional edge router function."""
     return state.get("next_step", "format_ticket")
 
-
-def build_vulnerability_graph():
+# Notice we now pass the memory checkpointer as an argument!
+def build_vulnerability_graph(memory: AsyncPostgresSaver):
     workflow = StateGraph(AgentState)
 
     # 1. Add all nodes
@@ -23,7 +18,6 @@ def build_vulnerability_graph():
     workflow.add_node("policy_agent", policy_node)
     workflow.add_node("formatter", formatter_node)
     workflow.add_node("access_check", access_check_node)
-
     workflow.add_node("asset_check", asset_check_node)
     workflow.add_node("draft_ticket", draft_ticket_node)
     workflow.add_node("create_ticket", create_ticket_node)
@@ -31,7 +25,6 @@ def build_vulnerability_graph():
     # 2. Add edges
     workflow.add_edge(START, "router")
     workflow.add_edge("access_check", "policy_agent")
-
     workflow.add_edge("asset_check", "draft_ticket")
     workflow.add_edge("draft_ticket", "create_ticket")
 
@@ -53,17 +46,9 @@ def build_vulnerability_graph():
     workflow.add_edge("policy_agent", "formatter")
     workflow.add_edge("formatter", END)
 
-    # 3. Add SQLite Checkpointer for Memory & HITL
-    conn = sqlite3.connect("checkpoints.sqlite", check_same_thread=False)
-    # memory = SqliteSaver(conn)
-    memory = MemorySaver()
-
-    # Compile with memory and interrupt BEFORE the final ticket formatting
+    # 3. Compile with Postgres memory and interrupt BEFORE the final ticket formatting
     return workflow.compile(
         checkpointer=memory,
         # it only pauses if the agent tries to create a ticket
         interrupt_before=["create_ticket"]
     )
-
-
-app = build_vulnerability_graph()

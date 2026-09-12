@@ -14,32 +14,63 @@ from langchain_google_genai import GoogleGenerativeAIEmbeddings
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
 from langchain_core.messages import HumanMessage
+from dotenv import load_dotenv
 
-from src.agent.graph import app as agent_app
+load_dotenv()
+
+from psycopg_pool import AsyncConnectionPool
+from langgraph.checkpoint.postgres.aio import AsyncPostgresSaver
+from src.agent.graph import build_vulnerability_graph
+
+# Global variable to hold our compiled app
+agent_app = None
 
 
-# --- AUTOMATIC VECTOR DB REBUILD ---
+# --- AUTOMATIC POSTGRESQL DB CONNECTION & REBUILD ---
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """Executes startup and shutdown logic for the API."""
-    print("🚀 Container Starting: Rebuilding ephemeral ChromaDB...")
-    try:
+    print("🚀 Container Starting: Connecting to PostgreSQL...")
+
+    # Uses the environment variable in AWS, or localhost for local testing
+    DB_URI = os.getenv("DATABASE_URL")
+
+    # 1. Create a connection pool that stays open while the server runs
+    async with AsyncConnectionPool(
+            conninfo=DB_URI,
+            max_size=20,
+            kwargs={"autocommit": True, "prepare_threshold": 0},
+    ) as pool:
+
+        # 2. Initialize the Postgres Checkpointer with our pool
+        checkpointer = AsyncPostgresSaver(pool)
+
+        # 3. Create the LangGraph state tables in the database if they don't exist yet!
+        await checkpointer.setup()
+
+        # 4. Compile our LangGraph app using the new checkpointer
+        global agent_app
+        agent_app = build_vulnerability_graph(memory=checkpointer)
+
+        print("✅ PostgreSQL Checkpointer initialized!")
+
         # Automatically run your ingest script to parse the Markdown SLA policies
-        # and load them into the fresh ChromaDB instance on boot.
-        subprocess.run(["python", "-m", "src.rag.ingest"], check=True)
-        print("✅ ChromaDB rebuilt successfully!")
-    except Exception as e:
-        print(f"⚠️ Warning: Failed to rebuild ChromaDB on startup: {e}")
+        # and load them into the fresh PGVector database on boot.
+        try:
+            subprocess.run(["python", "-m", "src.rag.ingest"], check=True)
+            print("✅ Data ingested into PGVector successfully!")
+        except Exception as e:
+            print(f"⚠️ Warning: Failed to ingest data into PGVector on startup: {e}")
 
-    yield  # The FastAPI server runs while yielding
+        yield  # The FastAPI server runs while yielding
 
-    print("🛑 Container Shutting Down.")
+    print("🛑 Container Shutting Down. Closing DB pool.")
 
 
 # -----------------------------------
 
 # 1. Define the embedding model used to compare question similarity
-embeddings = GoogleGenerativeAIEmbeddings(model="models/embedding-001")
+embeddings = GoogleGenerativeAIEmbeddings(model="models/gemini-embedding-001")
 
 # 2. Configure the Semantic Cache interceptor globally
 set_llm_cache(InMemoryCache())

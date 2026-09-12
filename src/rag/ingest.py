@@ -1,19 +1,13 @@
-
 import os
 from pathlib import Path
 from dotenv import load_dotenv
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_google_genai import GoogleGenerativeAIEmbeddings
-from langchain_chroma import Chroma
-
-# Using the import below in a production environment would cause DeprecationWarning errors and cause headaches
-# from langchain_community.document_loaders import TextLoader, DirectoryLoader
-# Instead, we use Modern LangChain imports (No community package)
+from langchain_postgres.vectorstores import PGVector
+from sqlalchemy import create_engine
 from langchain_core.documents import Document
 
 load_dotenv()
-
-CHROMA_DIR = "./chroma_db"
 
 
 def build_vector_store():
@@ -38,23 +32,33 @@ def build_vector_store():
         )
         docs.append(doc)
 
-        # 3. Chunking
+    # 3. Chunking
     splitter = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=50)
     chunks = splitter.split_documents(docs)
 
-    print(f"Initializing ChromaDB with {len(chunks)} document chunks...")
+    print(f"Initializing PGVector with {len(chunks)} document chunks...")
 
     embeddings = GoogleGenerativeAIEmbeddings(model="models/gemini-embedding-001")
 
-    # 4. Build and persist (Notice 'embedding' is singular!)
-    vectorstore = Chroma.from_documents(
+    # 4. Database connection setup for SQLAlchemy
+    DB_URI = os.getenv("DATABASE_URL")
+    if DB_URI and DB_URI.startswith("postgresql://"):
+        SQLALCHEMY_URI = DB_URI.replace("postgresql://", "postgresql+psycopg://", 1)
+    else:
+        SQLALCHEMY_URI = DB_URI
+
+    engine = create_engine(SQLALCHEMY_URI)
+
+    # 5. Build and persist to PostgreSQL
+    vectorstore = PGVector.from_documents(
         documents=chunks,
         embedding=embeddings,
-        persist_directory=CHROMA_DIR,
-        collection_name="vuln_management_kb"
+        collection_name="vuln_management_kb",
+        connection=engine,
+        use_jsonb=True,
     )
 
-    print(f"Success! Vector store persisted to {CHROMA_DIR}.")
+    print("Success! Vector store persisted to AWS RDS PostgreSQL.")
     return vectorstore
 
 

@@ -62,13 +62,15 @@ jobs:
         run: |
           aws ecs describe-task-definition --task-definition secops-triage-task --query taskDefinition > task-definition.json
 
-      - name: Update task definition with the new Docker image ID
+      - name: Update task definition with the new Docker image ID and DB Secret
         id: task-def
         uses: aws-actions/amazon-ecs-render-task-definition@v1
         with:
           task-definition: task-definition.json
-          container-name: secops-triage-container # E.g., vuln-rag-container
+          container-name: secops-triage-container
           image: ${{ steps.login-ecr.outputs.registry }}/secops-vuln-agent:${{ github.sha }}
+          environment-variables: |
+            DATABASE_URL=${{ secrets.DATABASE_URL }}
 
       - name: Deploy to Amazon ECS
         uses: aws-actions/amazon-ecs-deploy-task-definition@v1

@@ -4,13 +4,15 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="cd401061-9d7e-4abb-9b3f-6df7ffd9ac1f" name="Changes" comment="fix: update evaluation pipeline to use astream and handle output formatting in async evaluation workflow">
-      <change afterPath="$PROJECT_DIR$/seed_db.py" afterDir="false" />
+    <list default="true" id="cd401061-9d7e-4abb-9b3f-6df7ffd9ac1f" name="Changes" comment="feat: updated seed_db to include new security policies and seed database with them &#10;fix: removed unnecessary next_step in policy node and updated access check message">
       <change beforePath="$PROJECT_DIR$/.github/workflows/deploy.yml" beforeDir="false" afterPath="$PROJECT_DIR$/.github/workflows/deploy.yml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Dockerfile" beforeDir="false" afterPath="$PROJECT_DIR$/Dockerfile" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/agent/graph.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/agent/graph.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/agent/nodes.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/agent/nodes.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/main.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/rag/ingest.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/rag/ingest.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -49,23 +51,23 @@
   </component>
   <component name="NextEditCompletionFeaturesState">
     <decayedCancelled>
-      <entry key="MS100" value="1.0000004735434034" />
-      <entry key="MS500" value="1.0543340350056263" />
-      <entry key="S2" value="1.4828008094537624" />
-      <entry key="S5" value="1.7473210164449804" />
-      <entry key="S10" value="1.8644773082302277" />
-      <entry key="S30" value="1.9526159876867974" />
-      <entry key="S60" value="1.9760204852803027" />
-      <entry key="M2" value="1.9879375005268303" />
-      <entry key="M5" value="1.9968175802254309" />
-      <entry key="M10" value="2.0913371719390588" />
-      <entry key="M15" value="2.364317722002472" />
-      <entry key="M30" value="3.456344798254596" />
-      <entry key="H1" value="4.941005721155285" />
-      <entry key="H2" value="6.206932247459874" />
-      <entry key="H4" value="7.324193614410597" />
-      <entry key="D1" value="12.464316609951268" />
-      <entry key="W1" value="15.375263668549577" />
+      <entry key="MS100" value="1.0" />
+      <entry key="MS500" value="1.0" />
+      <entry key="S2" value="1.0" />
+      <entry key="S5" value="1.0" />
+      <entry key="S10" value="1.0" />
+      <entry key="S30" value="1.0" />
+      <entry key="S60" value="1.0" />
+      <entry key="M2" value="1.0000000000015503" />
+      <entry key="M5" value="1.0000188870484192" />
+      <entry key="M10" value="1.0043496621227779" />
+      <entry key="M15" value="1.0271337143163235" />
+      <entry key="M30" value="1.23453389060745" />
+      <entry key="H1" value="2.374860985638925" />
+      <entry key="H2" value="5.650124240499009" />
+      <entry key="H4" value="10.483677496385344" />
+      <entry key="D1" value="22.545567360532203" />
+      <entry key="W1" value="27.872300362748277" />
     </decayedCancelled>
     <decayedSelected>
       <entry key="MS100" value="0.0" />
@@ -87,23 +89,23 @@
       <entry key="W1" value="0.0" />
     </decayedSelected>
     <decayedShown>
-      <entry key="MS100" value="0.9265880772104608" />
-      <entry key="MS500" value="1.0122224219484963" />
-      <entry key="S2" value="1.402884547199117" />
-      <entry key="S5" value="1.6962348837766843" />
-      <entry key="S10" value="1.8345573157653208" />
-      <entry key="S30" value="1.9415289309292636" />
-      <entry key="S60" value="1.9703280060948694" />
-      <entry key="M2" value="1.985053255897997" />
-      <entry key="M5" value="1.995654538701963" />
-      <entry key="M10" value="2.0907506883043245" />
-      <entry key="M15" value="2.36391973420037" />
-      <entry key="M30" value="3.456132612233843" />
-      <entry key="H1" value="4.94089096205283" />
-      <entry key="H2" value="6.206871277602497" />
-      <entry key="H4" value="7.324161897535551" />
-      <entry key="D1" value="12.464310953183334" />
-      <entry key="W1" value="15.375262838694717" />
+      <entry key="MS100" value="0.6925547340554623" />
+      <entry key="MS500" value="0.9291606742509133" />
+      <entry key="S2" value="0.9817992705948825" />
+      <entry key="S5" value="0.9926795657513535" />
+      <entry key="S10" value="0.9963330596499111" />
+      <entry key="S30" value="0.9987761894486769" />
+      <entry key="S60" value="0.9993879073956603" />
+      <entry key="M2" value="0.9996939068528726" />
+      <entry key="M5" value="0.9998964381075719" />
+      <entry key="M10" value="1.0042883857439577" />
+      <entry key="M15" value="1.0270926870318593" />
+      <entry key="M30" value="1.2345124144454915" />
+      <entry key="H1" value="2.3748451982738965" />
+      <entry key="H2" value="5.650105525596473" />
+      <entry key="H4" value="10.483658916694473" />
+      <entry key="D1" value="22.545561210357413" />
+      <entry key="W1" value="27.872299356439267" />
     </decayedShown>
   </component>
   <component name="ProjectColorInfo">{
@@ -204,7 +206,15 @@
       <option name="project" value="LOCAL" />
       <updated>1789056867504</updated>
     </task>
-    <option name="localTasksCounter" value="8" />
+    <task id="LOCAL-00008" summary="feat: updated seed_db to include new security policies and seed database with them &#10;fix: removed unnecessary next_step in policy node and updated access check message">
+      <option name="closed" value="true" />
+      <created>1789234632024</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1789234632024</updated>
+    </task>
+    <option name="localTasksCounter" value="9" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -218,6 +228,7 @@
     <MESSAGE value="fix: updated formatter node to handle both formatter and create_ticket nodes and added fallback for custom dictionaries" />
     <MESSAGE value="fix: updated gemini model version and llm for evaluation." />
     <MESSAGE value="fix: update evaluation pipeline to use astream and handle output formatting in async evaluation workflow" />
-    <option name="LAST_COMMIT_MESSAGE" value="fix: update evaluation pipeline to use astream and handle output formatting in async evaluation workflow" />
+    <MESSAGE value="feat: updated seed_db to include new security policies and seed database with them &#10;fix: removed unnecessary next_step in policy node and updated access check message" />
+    <option name="LAST_COMMIT_MESSAGE" value="feat: updated seed_db to include new security policies and seed database with them &#10;fix: removed unnecessary next_step in policy node and updated access check message" />
   </component>
 </project>
