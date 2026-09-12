@@ -28,7 +28,7 @@ jobs:
           PYTHONPATH: "."
         run: python -m src.evaluate
 
-      # --- NEW REAL AWS ECR DEPLOYMENT STEPS ---
+      # --- NEW AWS ECR DEPLOYMENT STEPS ---
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
@@ -44,7 +44,7 @@ jobs:
       - name: Build, tag, and push image to Amazon ECR
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          ECR_REPOSITORY: secops-vuln-agent # <--- CHANGED TO YOUR NEW BUCKET
+          ECR_REPOSITORY: secops-vuln-agent
           IMAGE_TAG: ${{ github.sha }}
         run: |
           # 1. Build the Docker image
@@ -56,3 +56,24 @@ jobs:
           # 3. Tag and push as 'latest' for easy pulling
           docker tag $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG $ECR_REGISTRY/$ECR_REPOSITORY:latest
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:latest
+
+      - name: Download current ECS task definition
+        # Dynamically grabs your active task config so you don't have to manage a JSON file locally!
+        run: |
+          aws ecs describe-task-definition --task-definition secops-triage-task --query taskDefinition > task-definition.json
+
+      - name: Update task definition with the new Docker image ID
+        id: task-def
+        uses: aws-actions/amazon-ecs-render-task-definition@v1
+        with:
+          task-definition: task-definition.json
+          container-name: secops-triage-container # E.g., vuln-rag-container
+          image: ${{ steps.login-ecr.outputs.registry }}/secops-vuln-agent:${{ github.sha }}
+
+      - name: Deploy to Amazon ECS
+        uses: aws-actions/amazon-ecs-deploy-task-definition@v1
+        with:
+          task-definition: ${{ steps.task-def.outputs.task-definition }}
+          service: secops-triage-service
+          cluster: security-cluster
+          wait-for-service-stability: true

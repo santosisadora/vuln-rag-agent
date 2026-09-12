@@ -49,7 +49,7 @@ def build_vulnerability_graph():
     )
 
     # Pipeline transitions
-    workflow.add_edge("nvd_agent", "policy_agent")
+    workflow.add_edge("nvd_agent", "formatter")
     workflow.add_edge("policy_agent", "formatter")
     workflow.add_edge("formatter", END)
 

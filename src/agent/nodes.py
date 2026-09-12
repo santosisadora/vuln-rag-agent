@@ -58,11 +58,14 @@ async def nvd_node(state: AgentState) -> dict:
     """Calls the NIST NVD API tool to retrieve real-time vulnerability facts."""
     cve_id = state.get("cve_id")
     if not cve_id:
-        return {"cve_intel": "No CVE ID specified for NVD lookup.", "next_step": "retrieve_policy"}
+        # Changed from "retrieve_policy" to "access_check"
+        return {"cve_intel": "No CVE ID specified for NVD lookup.", "next_step": "access_check"}
 
     # Use ainvoke so the HTTP call doesn't block the async event loop
     intel = await fetch_nvd_cve_data.ainvoke({"cve_id": cve_id})
-    return {"cve_intel": intel, "next_step": "retrieve_policy"}
+
+    # Changed from "retrieve_policy" to "access_check"
+    return {"cve_intel": intel, "next_step": "format_ticket"}
 
 
 def policy_node(state: AgentState) -> dict:
@@ -100,11 +103,13 @@ async def formatter_node(state: AgentState) -> dict:
         f"Vulnerability Data (NVD):\n{cve_data}\n\n"
         f"Internal Policy Context:\n{policy_data}\n\n"
         "INSTRUCTIONS FOR FORMATTING:\n"
-        "1. If the user asked about a specific vulnerability or CVE, output a highly scannable Markdown '🚨 Vulnerability Report'. "
+        "1. SECURITY EXCEPTION: If the 'Internal Policy Context' contains the phrase 'ACCESS DENIED', you MUST immediately stop normal formatting. "
+        "Do NOT attempt to answer the user's question. Instead, output ONLY the following exact markdown block:\n"
+        "> 🚨 **SECURITY EXCEPTION:** You lack the required clearance to view internal policies for this query. Escalating to SecOps Lead.\n\n"
+        "2. If the user asked about a specific vulnerability or CVE (and access is granted), output a highly scannable Markdown '🚨 Vulnerability Report'. "
         "Clearly section out the Description, Severity, CVSS Score, and Required Actions (with SLA deadlines).\n"
-        "2. If the user asked a general question about internal policies, SLAs, or concepts (and no specific CVE is being analyzed), "
-        "DO NOT use the strict Vulnerability Report template. Instead, provide a clear, conversational, well-structured Markdown response "
-        "that directly answers their question using the Internal Policy Context.\n\n"
+        "3. If the user asked a general question about internal policies, SLAs, or concepts (and access is granted), "
+        "provide a clear, conversational, well-structured Markdown response that directly answers their question using the Internal Policy Context.\n\n"
         "Do NOT output raw JSON. Use bullet points and bold text where appropriate for readability."
     )
 

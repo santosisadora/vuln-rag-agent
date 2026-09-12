@@ -109,7 +109,7 @@ async def event_generator(payload: TriageRequest):
                 yield f"data: {json.dumps({'type': 'node', 'content': f'Node [{node_name}] completed.'})}\n\n"
 
                 # 2. Grab the final output from the formatter OR the create_ticket node
-                if node_name in ["formatter", "create_ticket"]:
+                if node_name in ["formatter", "draft_ticket", "create_ticket"]:
                     try:
                         # Try to extract standard LangChain message content
                         final_text = node_state["messages"][-1].content
