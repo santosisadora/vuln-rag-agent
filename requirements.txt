@@ -24,12 +24,10 @@ redis
 
 slowapi>=0.1.9
 
+
 # PostgreSQL
-psycopg[binary]
-psycopg_pool
 langgraph-checkpoint-postgres
 langchain-postgres
-
-psycopg2-binary==2.9.13
-psycopg[binary]==3.1.18
-psycopg-pool==3.2.1
+psycopg[binary]>=3.2.1
+psycopg-pool>=3.2.1
+psycopg2-binary>=2.9.9
