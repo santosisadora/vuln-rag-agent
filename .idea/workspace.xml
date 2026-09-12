@@ -4,8 +4,9 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="cd401061-9d7e-4abb-9b3f-6df7ffd9ac1f" name="Changes" comment="feat: updated build_vulnerability_graph to use PostgreSQL and added Postgres checkpointer for automatic data ingestion and retrieval">
-      <change beforePath="$PROJECT_DIR$/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
+    <list default="true" id="cd401061-9d7e-4abb-9b3f-6df7ffd9ac1f" name="Changes" comment="fix: corrected psycopg2-binary version">
+      <change beforePath="$PROJECT_DIR$/.github/workflows/deploy.yml" beforeDir="false" afterPath="$PROJECT_DIR$/.github/workflows/deploy.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -44,23 +45,23 @@
   </component>
   <component name="NextEditCompletionFeaturesState">
     <decayedCancelled>
-      <entry key="MS100" value="1.0" />
-      <entry key="MS500" value="1.0" />
-      <entry key="S2" value="1.0" />
-      <entry key="S5" value="1.0" />
-      <entry key="S10" value="1.0" />
-      <entry key="S30" value="1.0000000579546635" />
-      <entry key="S60" value="1.000240737748583" />
-      <entry key="M2" value="1.015515725847784" />
-      <entry key="M5" value="1.1889370113869795" />
-      <entry key="M10" value="1.43655539260331" />
-      <entry key="M15" value="1.5893816327862407" />
-      <entry key="M30" value="1.9351640932940803" />
-      <entry key="H1" value="3.066952975098263" />
-      <entry key="H2" value="6.271135729310434" />
-      <entry key="H4" value="11.125972726813128" />
-      <entry key="D1" value="23.415495954270867" />
-      <entry key="W1" value="28.849271538348244" />
+      <entry key="MS100" value="1.0134155360597796" />
+      <entry key="MS500" value="1.4760097679830726" />
+      <entry key="S2" value="2.2877137785030417" />
+      <entry key="S5" value="2.6639816571448955" />
+      <entry key="S10" value="2.8218604122762008" />
+      <entry key="S30" value="2.9409034354648558" />
+      <entry key="S60" value="3.0208517275513906" />
+      <entry key="M2" value="3.216012404701784" />
+      <entry key="M5" value="3.652053230624141" />
+      <entry key="M10" value="4.065832188739811" />
+      <entry key="M15" value="4.30304884318128" />
+      <entry key="M30" value="4.752562701270643" />
+      <entry key="H1" value="5.919019449221374" />
+      <entry key="H2" value="9.118311367414432" />
+      <entry key="H4" value="13.989674064755642" />
+      <entry key="D1" value="26.36746617901176" />
+      <entry key="W1" value="31.8408111852842" />
     </decayedCancelled>
     <decayedSelected>
       <entry key="MS100" value="0.0" />
@@ -82,23 +83,23 @@
       <entry key="W1" value="0.0" />
     </decayedSelected>
     <decayedShown>
-      <entry key="MS100" value="0.9659363289248456" />
-      <entry key="MS500" value="0.9930924954370359" />
-      <entry key="S2" value="0.9982686325973925" />
-      <entry key="S5" value="0.9993070929904525" />
-      <entry key="S10" value="0.9996534864594093" />
-      <entry key="S30" value="0.9998845400263462" />
-      <entry key="S60" value="1.0001828297979483" />
-      <entry key="M2" value="1.0154820958749378" />
-      <entry key="M5" value="1.1889023243007144" />
-      <entry key="M10" value="1.4365229817117409" />
-      <entry key="M15" value="1.589354240028555" />
-      <entry key="M30" value="1.9351458996131552" />
-      <entry key="H1" value="3.0669382719095766" />
-      <entry key="H2" value="6.2711177883791835" />
-      <entry key="H4" value="11.125954540388236" />
-      <entry key="D1" value="23.415489799465394" />
-      <entry key="W1" value="28.84927052714029" />
+      <entry key="MS100" value="0.9723128068459971" />
+      <entry key="MS500" value="1.465094244994517" />
+      <entry key="S2" value="2.2838525839525596" />
+      <entry key="S5" value="2.6622277747847" />
+      <entry key="S10" value="2.820939553491778" />
+      <entry key="S30" value="2.9405853837526457" />
+      <entry key="S60" value="3.020688425762236" />
+      <entry key="M2" value="3.2159242280967155" />
+      <entry key="M5" value="3.652001734893787" />
+      <entry key="M10" value="4.065791912019605" />
+      <entry key="M15" value="4.303015573318022" />
+      <entry key="M30" value="4.752540824937694" />
+      <entry key="H1" value="5.919002757550575" />
+      <entry key="H2" value="9.118292515257979" />
+      <entry key="H4" value="13.989655427040933" />
+      <entry key="D1" value="26.367459924510435" />
+      <entry key="W1" value="31.840810158327628" />
     </decayedShown>
   </component>
   <component name="ProjectColorInfo">{
@@ -215,7 +216,15 @@
       <option name="project" value="LOCAL" />
       <updated>1789253613786</updated>
     </task>
-    <option name="localTasksCounter" value="10" />
+    <task id="LOCAL-00010" summary="fix: corrected psycopg2-binary version">
+      <option name="closed" value="true" />
+      <created>1789253849733</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1789253849733</updated>
+    </task>
+    <option name="localTasksCounter" value="11" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -231,6 +240,7 @@
     <MESSAGE value="fix: update evaluation pipeline to use astream and handle output formatting in async evaluation workflow" />
     <MESSAGE value="feat: updated seed_db to include new security policies and seed database with them &#10;fix: removed unnecessary next_step in policy node and updated access check message" />
     <MESSAGE value="feat: updated build_vulnerability_graph to use PostgreSQL and added Postgres checkpointer for automatic data ingestion and retrieval" />
-    <option name="LAST_COMMIT_MESSAGE" value="feat: updated build_vulnerability_graph to use PostgreSQL and added Postgres checkpointer for automatic data ingestion and retrieval" />
+    <MESSAGE value="fix: corrected psycopg2-binary version" />
+    <option name="LAST_COMMIT_MESSAGE" value="fix: corrected psycopg2-binary version" />
   </component>
 </project>
