@@ -4,10 +4,8 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="cd401061-9d7e-4abb-9b3f-6df7ffd9ac1f" name="Changes" comment="fix: Update evaluate.py to use cloud PostgreSQL checkpointer">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+    <list default="true" id="cd401061-9d7e-4abb-9b3f-6df7ffd9ac1f" name="Changes" comment="feat: added FlashRank reranker">
       <change beforePath="$PROJECT_DIR$/pyproject.toml" beforeDir="false" afterPath="$PROJECT_DIR$/pyproject.toml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/agent/nodes.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/agent/nodes.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -46,23 +44,23 @@
   </component>
   <component name="NextEditCompletionFeaturesState">
     <decayedCancelled>
-      <entry key="MS100" value="1.000269119731153" />
-      <entry key="MS500" value="1.2708530392564987" />
-      <entry key="S2" value="2.83517312918759" />
-      <entry key="S5" value="3.9033324216667826" />
-      <entry key="S10" value="4.402933083003598" />
-      <entry key="S30" value="4.789055770094182" />
-      <entry key="S60" value="4.910041548906163" />
-      <entry key="M2" value="5.1883237675474865" />
-      <entry key="M5" value="6.2765018455229225" />
-      <entry key="M10" value="7.4132327617537985" />
-      <entry key="M15" value="8.040951002471374" />
-      <entry key="M30" value="8.99638580436666" />
-      <entry key="H1" value="10.428393997694657" />
-      <entry key="H2" value="13.732782030254134" />
-      <entry key="H4" value="18.690989998695898" />
-      <entry key="D1" value="31.27286416917357" />
-      <entry key="W1" value="36.82446839328037" />
+      <entry key="MS100" value="1.0042745847705499" />
+      <entry key="MS500" value="1.335875856431194" />
+      <entry key="S2" value="1.7622462763262448" />
+      <entry key="S5" value="1.9588628791314417" />
+      <entry key="S10" value="2.196356612052706" />
+      <entry key="S30" value="2.6114756937761823" />
+      <entry key="S60" value="2.7843566728683733" />
+      <entry key="M2" value="2.8868686742124665" />
+      <entry key="M5" value="3.1276110239802786" />
+      <entry key="M10" value="4.212849852191816" />
+      <entry key="M15" value="5.420754050217541" />
+      <entry key="M30" value="7.944378067066445" />
+      <entry key="H1" value="10.733304235344187" />
+      <entry key="H2" value="14.826906268351005" />
+      <entry key="H4" value="20.346038374684998" />
+      <entry key="D1" value="33.8861770166212" />
+      <entry key="W1" value="39.75907807440323" />
     </decayedCancelled>
     <decayedSelected>
       <entry key="MS100" value="0.0" />
@@ -84,23 +82,23 @@
       <entry key="W1" value="0.0" />
     </decayedSelected>
     <decayedShown>
-      <entry key="MS100" value="0.9077772674549314" />
-      <entry key="MS500" value="1.242676548230334" />
-      <entry key="S2" value="2.80525488979322" />
-      <entry key="S5" value="3.8848466741547827" />
-      <entry key="S10" value="4.392178980085484" />
-      <entry key="S30" value="4.785084283832755" />
-      <entry key="S60" value="4.908003004192385" />
-      <entry key="M2" value="5.187285066667491" />
-      <entry key="M5" value="6.276067501140882" />
-      <entry key="M10" value="7.413000189601194" />
-      <entry key="M15" value="8.040788275569327" />
-      <entry key="M30" value="8.996297752414105" />
-      <entry key="H1" value="10.428343849617054" />
-      <entry key="H2" value="13.732746552117897" />
-      <entry key="H4" value="18.69096304676383" />
-      <entry key="D1" value="31.272856485041373" />
-      <entry key="W1" value="36.82446715941119" />
+      <entry key="MS100" value="0.9700367847202481" />
+      <entry key="MS500" value="1.3261862017109054" />
+      <entry key="S2" value="1.7589318432963355" />
+      <entry key="S5" value="1.9573813634184254" />
+      <entry key="S10" value="2.1955299349285218" />
+      <entry key="S30" value="2.6111513360091907" />
+      <entry key="S60" value="2.7841843995665485" />
+      <entry key="M2" value="2.88677943471856" />
+      <entry key="M5" value="3.127562517511839" />
+      <entry key="M10" value="4.212792710351838" />
+      <entry key="M15" value="5.420692477840282" />
+      <entry key="M30" value="7.9443234500795565" />
+      <entry key="H1" value="10.733263951406641" />
+      <entry key="H2" value="14.826874169445926" />
+      <entry key="H4" value="20.34601259077405" />
+      <entry key="D1" value="33.88616929910797" />
+      <entry key="W1" value="39.759076824387186" />
     </decayedShown>
   </component>
   <component name="ProjectColorInfo">{
@@ -147,7 +145,7 @@
       <workItem from="1789429807277" duration="734000" />
       <workItem from="1789511472600" duration="2703000" />
       <workItem from="1789655889589" duration="2202000" />
-      <workItem from="1789827356092" duration="1873000" />
+      <workItem from="1789827356092" duration="2015000" />
     </task>
     <task id="LOCAL-00001" summary="feat: added CORSMiddleware to allow browser UI to connect and updated rate limiter for API security.">
       <option name="closed" value="true" />
@@ -245,7 +243,15 @@
       <option name="project" value="LOCAL" />
       <updated>1789255168703</updated>
     </task>
-    <option name="localTasksCounter" value="13" />
+    <task id="LOCAL-00013" summary="feat: added FlashRank reranker">
+      <option name="closed" value="true" />
+      <created>1789829275722</created>
+      <option name="number" value="00013" />
+      <option name="presentableId" value="LOCAL-00013" />
+      <option name="project" value="LOCAL" />
+      <updated>1789829275722</updated>
+    </task>
+    <option name="localTasksCounter" value="14" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -264,6 +270,7 @@
     <MESSAGE value="fix: corrected psycopg2-binary version" />
     <MESSAGE value="fix: Pass DATABASE_URL to evaluation step" />
     <MESSAGE value="fix: Update evaluate.py to use cloud PostgreSQL checkpointer" />
-    <option name="LAST_COMMIT_MESSAGE" value="fix: Update evaluate.py to use cloud PostgreSQL checkpointer" />
+    <MESSAGE value="feat: added FlashRank reranker" />
+    <option name="LAST_COMMIT_MESSAGE" value="feat: added FlashRank reranker" />
   </component>
 </project>
