@@ -31,3 +31,6 @@ langchain-postgres
 psycopg[binary]>=3.2.1
 psycopg-pool>=3.2.1
 psycopg2-binary>=2.9.9
+
+flashrank>=0.2.0
+langchain-classic

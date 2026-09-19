@@ -5,7 +5,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="cd401061-9d7e-4abb-9b3f-6df7ffd9ac1f" name="Changes" comment="feat: added FlashRank reranker">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/pyproject.toml" beforeDir="false" afterPath="$PROJECT_DIR$/pyproject.toml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -145,7 +147,7 @@
       <workItem from="1789429807277" duration="734000" />
       <workItem from="1789511472600" duration="2703000" />
       <workItem from="1789655889589" duration="2202000" />
-      <workItem from="1789827356092" duration="2015000" />
+      <workItem from="1789827356092" duration="2309000" />
     </task>
     <task id="LOCAL-00001" summary="feat: added CORSMiddleware to allow browser UI to connect and updated rate limiter for API security.">
       <option name="closed" value="true" />
@@ -251,7 +253,15 @@
       <option name="project" value="LOCAL" />
       <updated>1789829275722</updated>
     </task>
-    <option name="localTasksCounter" value="14" />
+    <task id="LOCAL-00014" summary="feat: added FlashRank reranker">
+      <option name="closed" value="true" />
+      <created>1789829386913</created>
+      <option name="number" value="00014" />
+      <option name="presentableId" value="LOCAL-00014" />
+      <option name="project" value="LOCAL" />
+      <updated>1789829386913</updated>
+    </task>
+    <option name="localTasksCounter" value="15" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
