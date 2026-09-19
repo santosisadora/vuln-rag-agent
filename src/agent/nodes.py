@@ -6,6 +6,10 @@ from langchain_postgres.vectorstores import PGVector
 from langchain_core.messages import SystemMessage, HumanMessage
 from sqlalchemy import create_engine
 
+# --- NEW RERANKER IMPORTS ---
+from langchain_classic.retrievers import ContextualCompressionRetriever
+from langchain_community.document_compressors.flashrank_rerank import FlashrankRerank
+
 from src.agent.state import AgentState
 from src.tools.nvd_api import fetch_nvd_cve_data
 from src.schemas.ticket import RemediationTicket
@@ -15,6 +19,11 @@ load_dotenv()
 # Initialize LLM & Vector Store
 llm = ChatGoogleGenerativeAI(model="gemini-3.8-flash", temperature=0)
 embeddings = GoogleGenerativeAIEmbeddings(model="models/gemini-embedding-001")
+
+# Global Initialization of the FlashRank Compressor
+# (Placed outside the function to prevent memory leaks in the AWS container)
+# We set top_n=2 to match your original k=2 output length for the Gemini prompt.
+compressor = FlashrankRerank(top_n=2)
 
 # Use os.getenv to allow AWS to inject the production DB, falling back to local for testing
 DB_URI = os.getenv("DATABASE_URL")
@@ -33,6 +42,7 @@ vectorstore = PGVector(
     connection=db_engine,
     use_jsonb=True,
 )
+
 
 def router_node(state: AgentState) -> dict:
     """Inspects the query to extract the CVE ID and route the workflow."""
@@ -58,9 +68,11 @@ def router_node(state: AgentState) -> dict:
         "access_granted": None,
     }
 
+
 def access_check_node(state: AgentState) -> dict:
     """Case 2: Validates if the user has Security Analyst (SA) clearance."""
     return {"access_granted": True, "next_step": "retrieve_policy"}
+
 
 async def nvd_node(state: AgentState) -> dict:
     """Calls the NIST NVD API tool to retrieve real-time vulnerability facts."""
@@ -71,23 +83,37 @@ async def nvd_node(state: AgentState) -> dict:
     intel = await fetch_nvd_cve_data.ainvoke({"cve_id": cve_id})
     return {"cve_intel": intel, "next_step": "format_ticket"}
 
+
 def policy_node(state: AgentState) -> dict:
     """Retrieves internal SecOps SLA policies after verifying clearance."""
     if not state.get("access_granted"):
         return {"policy_context": "ACCESS DENIED: You do not have SA clearance to view internal policies."}
 
     query = state["messages"][-1].content
-    retrieved_docs = vectorstore.similarity_search(
-        query,
-        k=2,
-        filter={"clearance_level": "INTERNAL"}
+
+    # 1. Fetch a broader net (top 10 chunks) from PGVector, keeping your clearance filter
+    base_retriever = vectorstore.as_retriever(
+        search_kwargs={
+            "k": 10,
+            "filter": {"clearance_level": "INTERNAL"}
+        }
     )
+
+    # 2. Create the compression hook
+    compression_retriever = ContextualCompressionRetriever(
+        base_compressor=compressor,
+        base_retriever=base_retriever
+    )
+
+    # 3. Invoke the hook to filter the 10 chunks down to the top 2 absolute best matches
+    retrieved_docs = compression_retriever.invoke(query)
 
     context = "\n\n".join([doc.page_content for doc in retrieved_docs])
     if not context:
         context = "No specific internal policies found for this query in the knowledge base."
 
     return {"policy_context": context, "next_step": "format_ticket"}
+
 
 async def formatter_node(state: AgentState) -> dict:
     """Generates the final Markdown report for the SecOps analyst."""
@@ -115,11 +141,13 @@ async def formatter_node(state: AgentState) -> dict:
     ])
     return {"messages": [response]}
 
+
 def asset_check_node(state: AgentState) -> dict:
     """Case 3: Simulates checking the internal asset inventory."""
     cve = state.get("cve_id", "the vulnerability")
     intel = f"🚨 **CRITICAL MATCH:** Internal asset `Payment-Gateway-01` is running a legacy version vulnerable to {cve}."
     return {"cve_intel": intel, "next_step": "draft_ticket"}
+
 
 async def draft_ticket_node(state: AgentState) -> dict:
     """Drafts the ticket payload and streams a preview for human approval."""
@@ -137,6 +165,7 @@ async def draft_ticket_node(state: AgentState) -> dict:
         HumanMessage(content=prompt)
     ])
     return {"messages": [response]}
+
 
 async def create_ticket_node(state: AgentState) -> dict:
     """Executes ONLY after HITL approval."""
