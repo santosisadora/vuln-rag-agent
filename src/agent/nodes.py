@@ -1,9 +1,12 @@
 import os
 import re
+import requests
+import json
+from requests.auth import HTTPBasicAuth
 from dotenv import load_dotenv
 from langchain_google_genai import ChatGoogleGenerativeAI, GoogleGenerativeAIEmbeddings
 from langchain_postgres.vectorstores import PGVector
-from langchain_core.messages import SystemMessage, HumanMessage
+from langchain_core.messages import SystemMessage, HumanMessage, AIMessage
 from sqlalchemy import create_engine
 
 # --- NEW RERANKER IMPORTS ---
@@ -168,9 +171,36 @@ async def draft_ticket_node(state: AgentState) -> dict:
 
 
 async def create_ticket_node(state: AgentState) -> dict:
-    """Executes ONLY after HITL approval."""
-    response = await llm.ainvoke([
-        HumanMessage(
-            content="The user approved the ticket. Write a short, 1-sentence confirmation that Ticket #SEC-9942 has been generated and pushed to Jira.")
-    ])
-    return {"messages": [response]}
+    """Executes ONLY after HITL approval and pushes a live Jira ticket."""
+
+    # We grab the markdown ticket draft from the previous node's output in the state messages
+    draft_content = state["messages"][-2].content if len(state["messages"]) > 1 else "Automated Vulnerability Ticket"
+    cve_id = state.get('cve_id', 'Unknown CVE')
+
+    url = f"https://{os.environ['JIRA_DOMAIN']}/rest/api/2/issue"
+    auth = HTTPBasicAuth(os.environ["JIRA_EMAIL"], os.environ["JIRA_API_TOKEN"])
+    headers = {
+        "Accept": "application/json",
+        "Content-Type": "application/json"
+    }
+
+    payload = json.dumps({
+        "fields": {
+            "project": {"key": "KAN"},
+            "summary": f"Remediate Vulnerability: {cve_id}",
+            "description": draft_content,
+            "issuetype": {"name": "Task"}
+        }
+    })
+
+    response = requests.post(url, data=payload, headers=headers, auth=auth)
+
+    if response.status_code == 201:
+        issue_key = response.json().get("key")
+        ticket_url = f"https://{os.environ['JIRA_DOMAIN']}/browse/{issue_key}"
+        success_msg = f"✅ **Ticket successfully created!**\n\nView it in Jira here: [{issue_key}]({ticket_url})"
+
+        return {"messages": [AIMessage(content=success_msg)]}
+    else:
+        error_msg = f"❌ **Failed to create Jira ticket:**\n```json\n{response.text}\n```"
+        return {"messages": [AIMessage(content=error_msg)]}
