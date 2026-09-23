@@ -133,7 +133,8 @@ async def formatter_node(state: AgentState) -> dict:
         "> 🚨 **SECURITY EXCEPTION:** You lack the required clearance to view internal policies for this query. Escalating to SecOps Lead.\n\n"
         "2. If the user asked about a specific vulnerability or CVE (and access is granted), output a highly scannable Markdown '🚨 Vulnerability Report'. "
         "Clearly section out the Description, Severity, CVSS Score, and Required Actions (with SLA deadlines).\n"
-        "3. If the user asked a general question about internal policies, SLAs, or concepts (and access is granted), "
+        "3. You MUST use color-coded circle emojis to represent the Severity level (🔴 Critical, 🟠 High, 🟡 Medium, 🟢 Low).\n"
+        "4. If the user asked a general question about internal policies, SLAs, or concepts (and access is granted), "
         "provide a clear, conversational, well-structured Markdown response that directly answers their question using the Internal Policy Context.\n\n"
         "Do NOT output raw JSON. Use bullet points and bold text where appropriate for readability."
     )
@@ -157,7 +158,7 @@ async def draft_ticket_node(state: AgentState) -> dict:
     prompt = (
         f"Based on this intel: {state.get('cve_intel')}\n\n"
         "Draft a highly scannable Markdown preview of the remediation ticket. "
-        "Include the Affected Asset, Severity, and Required Action.\n\n"
+        "Include the Affected Asset, Severity (using color-coded circles like 🔴 🟠 🟡 🟢), and Required Action.\n\n"
         "You MUST conclude your response with this exact text:\n"
         "### ⏸️ TICKET DRAFTED - APPROVAL REQUIRED\n"
         "*Workflow paused. Type **Approve** in the chat to officially generate this ticket.*"
@@ -171,11 +172,27 @@ async def draft_ticket_node(state: AgentState) -> dict:
 
 
 async def create_ticket_node(state: AgentState) -> dict:
-    """Executes ONLY after HITL approval and pushes a live Jira ticket."""
+    """Executes ONLY after HITL approval and pushes a detailed Jira ticket."""
 
-    # We grab the markdown ticket draft from the previous node's output in the state messages
-    draft_content = state["messages"][-2].content if len(state["messages"]) > 1 else "Automated Vulnerability Ticket"
-    cve_id = state.get('cve_id', 'Unknown CVE')
+    # Grab the markdown ticket draft from the previous node and strip the HITL warning text
+    draft_content = state["messages"][-2].content if len(state["messages"]) > 1 else ""
+    clean_draft = draft_content.split("### ⏸️")[0].strip()
+
+    # Fix the "None" title by providing a dynamic fallback
+    cve_id = state.get('cve_id')
+    summary_title = f"Remediate Vulnerability: {cve_id}" if cve_id else "Remediate Vulnerability: Internal Asset Risk"
+
+    # Build a highly detailed, enterprise-grade description using Jira Wiki markup
+    detailed_description = (
+        "h2. Automated SecOps Triage Report\n"
+        "This ticket was generated autonomously by the Vulnerability RAG Agent.\n\n"
+        "h3. Triage Summary\n"
+        f"{clean_draft}\n\n"
+        "h3. Internal SLA & Policy Context\n"
+        f"{state.get('policy_context', 'No specific internal policy matched.')}\n\n"
+        "h3. Vulnerability Intelligence\n"
+        f"{state.get('cve_intel', 'No additional intelligence gathered.')}"
+    )
 
     url = f"https://{os.environ['JIRA_DOMAIN']}/rest/api/2/issue"
     auth = HTTPBasicAuth(os.environ["JIRA_EMAIL"], os.environ["JIRA_API_TOKEN"])
@@ -187,8 +204,8 @@ async def create_ticket_node(state: AgentState) -> dict:
     payload = json.dumps({
         "fields": {
             "project": {"key": "KAN"},
-            "summary": f"Remediate Vulnerability: {cve_id}",
-            "description": draft_content,
+            "summary": summary_title,
+            "description": detailed_description,
             "issuetype": {"name": "Task"}
         }
     })
@@ -198,7 +215,9 @@ async def create_ticket_node(state: AgentState) -> dict:
     if response.status_code == 201:
         issue_key = response.json().get("key")
         ticket_url = f"https://{os.environ['JIRA_DOMAIN']}/browse/{issue_key}"
-        success_msg = f"✅ **Ticket successfully created!**\n\nView it in Jira here: [{issue_key}]({ticket_url})"
+
+        # Using raw HTML to force the link to open in a new tab
+        success_msg = f"✅ **Ticket successfully created!**\n\nView it in Jira here: <a href='{ticket_url}' target='_blank'>{issue_key}</a>"
 
         return {"messages": [AIMessage(content=success_msg)]}
     else:
