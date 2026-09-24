@@ -2,9 +2,11 @@ import os
 import json
 import traceback
 import subprocess
+import secrets
 from contextlib import asynccontextmanager
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Request, Depends, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from slowapi import Limiter, _rate_limit_exceeded_handler
 from slowapi.util import get_remote_address
 from slowapi.errors import RateLimitExceeded
@@ -24,6 +26,22 @@ from src.agent.graph import build_vulnerability_graph
 
 # Global variable to hold our compiled app
 agent_app = None
+
+# --- BASIC AUTHENTICATION SETUP ---
+security = HTTPBasic()
+
+
+def verify_credentials(credentials: HTTPBasicCredentials = Depends(security)):
+    correct_username = secrets.compare_digest(credentials.username, "recruiter")
+    correct_password = secrets.compare_digest(credentials.password, "hireme")
+
+    if not (correct_username and correct_password):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Incorrect username or password",
+            headers={"WWW-Authenticate": "Basic"},
+        )
+    return credentials.username
 
 
 # --- AUTOMATIC POSTGRESQL DB CONNECTION & REBUILD ---
@@ -112,6 +130,7 @@ class TriageRequest(BaseModel):
 @app.get("/health")
 async def health_check():
     """Standard Kubernetes-compatible health probe."""
+    # We purposefully leave this endpoint UNPROTECTED so the AWS Load Balancer can verify the container is alive.
     return {"status": "ok", "service": "vuln-rag-agent"}
 
 
@@ -169,6 +188,6 @@ async def event_generator(payload: TriageRequest):
 
 @app.post("/triage/stream")
 @limiter.limit("5/minute")  # Protects your API quota! Max 5 requests per minute per IP.
-async def stream_triage(request: Request, payload: TriageRequest):
-    """Initiates the vulnerability triage agent and streams the response."""
+async def stream_triage(request: Request, payload: TriageRequest, username: str = Depends(verify_credentials)):
+    """Initiates the vulnerability triage agent and streams the response. Now locked behind Basic Auth."""
     return StreamingResponse(event_generator(payload), media_type="text/event-stream")
