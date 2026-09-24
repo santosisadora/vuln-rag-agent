@@ -80,3 +80,10 @@ jobs:
           service: secops-triage-task-service-4mjftlhp
           cluster: security-cluster
           wait-for-service-stability: true
+
+      # --- AUTOMATIC FRONTEND (S3 + CLOUDFRONT) DEPLOYMENT ---
+
+      - name: Upload index.html to S3 and Invalidate CloudFront Cache
+        run: |
+          aws s3 cp index.html s3://isadora-santos-vuln-rag-agent/index.html --content-type "text/html" --cache-control "no-cache"
+          aws cloudfront create-invalidation --distribution-id EGIWKGZ1086PJ --paths "/*"
