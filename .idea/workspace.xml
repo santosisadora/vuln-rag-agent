@@ -4,14 +4,18 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="cd401061-9d7e-4abb-9b3f-6df7ffd9ac1f" name="Changes" comment="feat: added FlashRank reranker and langchain-classic to dependencies" />
+    <list default="true" id="cd401061-9d7e-4abb-9b3f-6df7ffd9ac1f" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/agent/graph.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/agent/graph.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/agent/nodes.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/agent/nodes.py" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="EmbeddingIndexingInfo">
-    <option name="cachedIndexableFilesCount" value="51" />
+    <option name="cachedIndexableFilesCount" value="58" />
     <option name="fileBasedEmbeddingIndicesEnabled" value="true" />
   </component>
   <component name="FileTemplateManagerImpl">
@@ -42,23 +46,23 @@
   </component>
   <component name="NextEditCompletionFeaturesState">
     <decayedCancelled>
-      <entry key="MS100" value="1.02706205620322" />
-      <entry key="MS500" value="1.7812381659064198" />
-      <entry key="S2" value="3.469682864571356" />
-      <entry key="S5" value="4.9562484851099935" />
-      <entry key="S10" value="5.8170791713069105" />
-      <entry key="S30" value="6.562232194256361" />
-      <entry key="S60" value="6.796598018006834" />
-      <entry key="M2" value="7.140190050279796" />
-      <entry key="M5" value="8.137430432023855" />
-      <entry key="M10" value="9.568376474184344" />
-      <entry key="M15" value="10.905366648922195" />
-      <entry key="M30" value="13.748692650783271" />
-      <entry key="H1" value="16.894456015529475" />
-      <entry key="H2" value="21.23657591199996" />
-      <entry key="H4" value="26.937273312882343" />
-      <entry key="D1" value="40.771860905274046" />
-      <entry key="W1" value="46.73989314853666" />
+      <entry key="MS100" value="1.0000313755440264" />
+      <entry key="MS500" value="1.1262736347602056" />
+      <entry key="S2" value="1.8244353597753395" />
+      <entry key="S5" value="2.641506166784187" />
+      <entry key="S10" value="3.1860130921263026" />
+      <entry key="S30" value="3.851505856291654" />
+      <entry key="S60" value="4.923839633773769" />
+      <entry key="M2" value="7.394501824931624" />
+      <entry key="M5" value="12.63325823900431" />
+      <entry key="M10" value="16.96044453917355" />
+      <entry key="M15" value="19.56550588549344" />
+      <entry key="M30" value="24.022946888345185" />
+      <entry key="H1" value="28.249897352011516" />
+      <entry key="H2" value="33.23511304582988" />
+      <entry key="H4" value="39.32296925516151" />
+      <entry key="D1" value="53.624232847140235" />
+      <entry key="W1" value="59.71603159244181" />
     </decayedCancelled>
     <decayedSelected>
       <entry key="MS100" value="0.0" />
@@ -80,23 +84,23 @@
       <entry key="W1" value="0.0" />
     </decayedSelected>
     <decayedShown>
-      <entry key="MS100" value="0.9922583714031142" />
-      <entry key="MS500" value="1.7699215374443336" />
-      <entry key="S2" value="3.4640566914999136" />
-      <entry key="S5" value="4.952958919089331" />
-      <entry key="S10" value="5.815133822356721" />
-      <entry key="S30" value="6.561497289055051" />
-      <entry key="S60" value="6.796216911992365" />
-      <entry key="M2" value="7.139989096907209" />
-      <entry key="M5" value="8.137334053290607" />
-      <entry key="M10" value="9.56830217965096" />
-      <entry key="M15" value="10.90529598821954" />
-      <entry key="M30" value="13.748633123150013" />
-      <entry key="H1" value="16.894412322794846" />
-      <entry key="H2" value="21.236541814668044" />
-      <entry key="H4" value="26.937246409400288" />
-      <entry key="D1" value="40.771852940999715" />
-      <entry key="W1" value="46.739891860156575" />
+      <entry key="MS100" value="6.147297763522169E-5" />
+      <entry key="MS500" value="0.2509234983018072" />
+      <entry key="S2" value="1.4182040482169127" />
+      <entry key="S5" value="2.4529096329040567" />
+      <entry key="S10" value="3.0866521078329963" />
+      <entry key="S30" value="3.8171542053790457" />
+      <entry key="S60" value="4.906416925517174" />
+      <entry key="M2" value="7.3855764326996365" />
+      <entry key="M5" value="12.629491791492848" />
+      <entry key="M10" value="16.958475677978832" />
+      <entry key="M15" value="19.564155713497023" />
+      <entry key="M30" value="24.022237025288508" />
+      <entry key="H1" value="28.249524781813392" />
+      <entry key="H2" value="33.23491346659102" />
+      <entry key="H4" value="39.32285929682482" />
+      <entry key="D1" value="53.62421095444704" />
+      <entry key="W1" value="59.716028310586886" />
     </decayedShown>
   </component>
   <component name="ProjectColorInfo">{
@@ -143,7 +147,11 @@
       <workItem from="1789429807277" duration="734000" />
       <workItem from="1789511472600" duration="2703000" />
       <workItem from="1789655889589" duration="2202000" />
-      <workItem from="1789827356092" duration="2428000" />
+      <workItem from="1789827356092" duration="5770000" />
+      <workItem from="1789845930107" duration="793000" />
+      <workItem from="1790019081630" duration="98000" />
+      <workItem from="1790117859204" duration="4771000" />
+      <workItem from="1790263083270" duration="5949000" />
     </task>
     <task id="LOCAL-00001" summary="feat: added CORSMiddleware to allow browser UI to connect and updated rate limiter for API security.">
       <option name="closed" value="true" />
@@ -265,7 +273,15 @@
       <option name="project" value="LOCAL" />
       <updated>1789829691180</updated>
     </task>
-    <option name="localTasksCounter" value="16" />
+    <task id="LOCAL-00016" summary="feat: added FlashRank reranker and langchain-classic to dependencies">
+      <option name="closed" value="true" />
+      <created>1789829798173</created>
+      <option name="number" value="00016" />
+      <option name="presentableId" value="LOCAL-00016" />
+      <option name="project" value="LOCAL" />
+      <updated>1789829798173</updated>
+    </task>
+    <option name="localTasksCounter" value="17" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">

@@ -2,7 +2,17 @@ from langgraph.graph import StateGraph, START, END
 from langgraph.checkpoint.postgres.aio import AsyncPostgresSaver
 
 from src.agent.state import AgentState
-from src.agent.nodes import router_node, nvd_node, policy_node, formatter_node, access_check_node, asset_check_node, draft_ticket_node, create_ticket_node
+from src.agent.nodes import (
+    router_node,
+    nvd_node,
+    policy_node,
+    formatter_node,
+    access_check_node,
+    asset_check_node,
+    draft_ticket_node,
+    create_ticket_node,
+    conversational_node
+)
 
 def route_next(state: AgentState) -> str:
     """Conditional edge router function."""
@@ -21,6 +31,7 @@ def build_vulnerability_graph(memory: AsyncPostgresSaver):
     workflow.add_node("asset_check", asset_check_node)
     workflow.add_node("draft_ticket", draft_ticket_node)
     workflow.add_node("create_ticket", create_ticket_node)
+    workflow.add_node("conversational_reply", conversational_node)
 
     # 2. Add edges
     workflow.add_edge(START, "router")
@@ -28,7 +39,7 @@ def build_vulnerability_graph(memory: AsyncPostgresSaver):
     workflow.add_edge("asset_check", "draft_ticket")
     workflow.add_edge("draft_ticket", "create_ticket")
 
-    # Router conditionally routes to NVD, Policy, or Formatter
+    # Router conditionally routes to NVD, Policy, Formatter, or Conversational Reply
     workflow.add_conditional_edges(
         "router",
         route_next,
@@ -37,13 +48,15 @@ def build_vulnerability_graph(memory: AsyncPostgresSaver):
             "access_check": "access_check",
             "asset_check": "asset_check",
             "retrieve_policy": "policy_agent",
-            "format_ticket": "formatter"
+            "format_ticket": "formatter",
+            "conversational_reply": "conversational_reply"
         }
     )
 
     # Pipeline transitions
     workflow.add_edge("nvd_agent", "formatter")
     workflow.add_edge("policy_agent", "formatter")
+    workflow.add_edge("conversational_reply", END)
     workflow.add_edge("formatter", END)
 
     # 3. Compile with Postgres memory and interrupt BEFORE the final ticket formatting
