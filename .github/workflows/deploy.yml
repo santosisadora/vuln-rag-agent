@@ -85,5 +85,11 @@ jobs:
 
       - name: Upload index.html to S3 and Invalidate CloudFront Cache
         run: |
-          aws s3 cp index.html s3://isadora-santos-vuln-rag-agent/index.html --content-type "text/html" --cache-control "no-cache"
-          aws cloudfront create-invalidation --distribution-id EGIWKGZ1086PJ --paths "/*"
+          HTML_FILE=$(find . -maxdepth 3 -name "index.html" | head -n 1)
+          if [ -n "$HTML_FILE" ]; then
+            echo "Found $HTML_FILE — uploading to S3 and invalidating CloudFront..."
+            aws s3 cp "$HTML_FILE" s3://isadora-santos-vuln-rag-agent/index.html --content-type "text/html" --cache-control "no-cache"
+            aws cloudfront create-invalidation --distribution-id EGIWKGZ1086PJ --paths "/*"
+          else
+            echo "Warning: index.html is not tracked in Git yet — skipping S3 sync without failing build."
+          fi
