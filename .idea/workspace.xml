@@ -4,10 +4,11 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="cd401061-9d7e-4abb-9b3f-6df7ffd9ac1f" name="Changes" comment="">
+    <list default="true" id="cd401061-9d7e-4abb-9b3f-6df7ffd9ac1f" name="Changes" comment="fix: changed nodes to display demo-mode for demonstration purposes allowing users to test all 3 use-cases">
+      <change beforePath="$PROJECT_DIR$/.github/workflows/deploy.yml" beforeDir="false" afterPath="$PROJECT_DIR$/.github/workflows/deploy.yml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/agent/graph.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/agent/graph.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/agent/nodes.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/agent/nodes.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/main.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -46,23 +47,23 @@
   </component>
   <component name="NextEditCompletionFeaturesState">
     <decayedCancelled>
-      <entry key="MS100" value="1.0000313755440264" />
-      <entry key="MS500" value="1.1262736347602056" />
-      <entry key="S2" value="1.8244353597753395" />
-      <entry key="S5" value="2.641506166784187" />
-      <entry key="S10" value="3.1860130921263026" />
-      <entry key="S30" value="3.851505856291654" />
-      <entry key="S60" value="4.923839633773769" />
-      <entry key="M2" value="7.394501824931624" />
-      <entry key="M5" value="12.63325823900431" />
-      <entry key="M10" value="16.96044453917355" />
-      <entry key="M15" value="19.56550588549344" />
-      <entry key="M30" value="24.022946888345185" />
-      <entry key="H1" value="28.249897352011516" />
-      <entry key="H2" value="33.23511304582988" />
-      <entry key="H4" value="39.32296925516151" />
-      <entry key="D1" value="53.624232847140235" />
-      <entry key="W1" value="59.71603159244181" />
+      <entry key="MS100" value="1.0000000005685026" />
+      <entry key="MS500" value="1.025778041747116" />
+      <entry key="S2" value="2.4475390728437247" />
+      <entry key="S5" value="5.996330225671509" />
+      <entry key="S10" value="10.713004695503985" />
+      <entry key="S30" value="21.668104776392564" />
+      <entry key="S60" value="28.817645825011223" />
+      <entry key="M2" value="35.26861565997379" />
+      <entry key="M5" value="44.36053552939313" />
+      <entry key="M10" value="51.54139860707719" />
+      <entry key="M15" value="55.5821242381736" />
+      <entry key="M30" value="61.949449757550724" />
+      <entry key="H1" value="67.44865195293039" />
+      <entry key="H2" value="73.18722622494704" />
+      <entry key="H4" value="79.71197039111259" />
+      <entry key="D1" value="94.48886140535907" />
+      <entry key="W1" value="100.69466470840607" />
     </decayedCancelled>
     <decayedSelected>
       <entry key="MS100" value="0.0" />
@@ -84,23 +85,23 @@
       <entry key="W1" value="0.0" />
     </decayedSelected>
     <decayedShown>
-      <entry key="MS100" value="6.147297763522169E-5" />
-      <entry key="MS500" value="0.2509234983018072" />
-      <entry key="S2" value="1.4182040482169127" />
-      <entry key="S5" value="2.4529096329040567" />
-      <entry key="S10" value="3.0866521078329963" />
-      <entry key="S30" value="3.8171542053790457" />
-      <entry key="S60" value="4.906416925517174" />
-      <entry key="M2" value="7.3855764326996365" />
-      <entry key="M5" value="12.629491791492848" />
-      <entry key="M10" value="16.958475677978832" />
-      <entry key="M15" value="19.564155713497023" />
-      <entry key="M30" value="24.022237025288508" />
-      <entry key="H1" value="28.249524781813392" />
-      <entry key="H2" value="33.23491346659102" />
-      <entry key="H4" value="39.32285929682482" />
-      <entry key="D1" value="53.62421095444704" />
-      <entry key="W1" value="59.716028310586886" />
+      <entry key="MS100" value="0.9526379985933493" />
+      <entry key="MS500" value="1.015953375203225" />
+      <entry key="S2" value="2.442677493434651" />
+      <entry key="S5" value="5.99187441717195" />
+      <entry key="S10" value="10.708760040433413" />
+      <entry key="S30" value="21.664314405587913" />
+      <entry key="S60" value="28.814279906868403" />
+      <entry key="M2" value="35.2652240561517" />
+      <entry key="M5" value="44.35781832881768" />
+      <entry key="M10" value="51.5395774589303" />
+      <entry key="M15" value="55.580765241029745" />
+      <entry key="M30" value="61.94867345697179" />
+      <entry key="H1" value="67.44822843155598" />
+      <entry key="H2" value="73.1869964351438" />
+      <entry key="H4" value="79.71184407647499" />
+      <entry key="D1" value="94.48883657981199" />
+      <entry key="W1" value="100.69466100131412" />
     </decayedShown>
   </component>
   <component name="ProjectColorInfo">{
@@ -151,7 +152,7 @@
       <workItem from="1789845930107" duration="793000" />
       <workItem from="1790019081630" duration="98000" />
       <workItem from="1790117859204" duration="4771000" />
-      <workItem from="1790263083270" duration="5949000" />
+      <workItem from="1790263083270" duration="10831000" />
     </task>
     <task id="LOCAL-00001" summary="feat: added CORSMiddleware to allow browser UI to connect and updated rate limiter for API security.">
       <option name="closed" value="true" />
@@ -281,7 +282,15 @@
       <option name="project" value="LOCAL" />
       <updated>1789829798173</updated>
     </task>
-    <option name="localTasksCounter" value="17" />
+    <task id="LOCAL-00017" summary="fix: changed nodes to display demo-mode for demonstration purposes allowing users to test all 3 use-cases">
+      <option name="closed" value="true" />
+      <created>1790273608081</created>
+      <option name="number" value="00017" />
+      <option name="presentableId" value="LOCAL-00017" />
+      <option name="project" value="LOCAL" />
+      <updated>1790273608081</updated>
+    </task>
+    <option name="localTasksCounter" value="18" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -302,6 +311,7 @@
     <MESSAGE value="fix: Update evaluate.py to use cloud PostgreSQL checkpointer" />
     <MESSAGE value="feat: added FlashRank reranker" />
     <MESSAGE value="feat: added FlashRank reranker and langchain-classic to dependencies" />
-    <option name="LAST_COMMIT_MESSAGE" value="feat: added FlashRank reranker and langchain-classic to dependencies" />
+    <MESSAGE value="fix: changed nodes to display demo-mode for demonstration purposes allowing users to test all 3 use-cases" />
+    <option name="LAST_COMMIT_MESSAGE" value="fix: changed nodes to display demo-mode for demonstration purposes allowing users to test all 3 use-cases" />
   </component>
 </project>

@@ -49,7 +49,7 @@ vectorstore = PGVector(
 
 
 def router_node(state: AgentState) -> dict:
-    """Inspects the query to extract the CVE ID and route the workflow."""
+    """Inspects the query to extract the CVE ID and route the workflow using a strict SecOps whitelist."""
     last_message = state["messages"][-1].content
     msg_lower = last_message.lower().strip()
 
@@ -57,17 +57,26 @@ def router_node(state: AgentState) -> dict:
     cve_match = re.search(r"CVE-\d{4}-\d{4,7}", last_message, re.IGNORECASE)
     cve_id = cve_match.group(0).upper() if cve_match else None
 
-    greetings = ["hi", "hello", "hey", "help", "who are you", "what can you do"]
+    asset_keywords = [
+        "asset", "assets", "inventory", "server", "servers",
+        "host", "hosts", "affected", "impacted", "gateway"
+    ]
+    policy_keywords = [
+        "policy", "policies", "sla", "remediation", "timeline", "schedule",
+        "critical", "high", "medium", "low", "cvss", "severity", "tier",
+        "compliance", "standard", "patch", "patching", "escalation",
+        "deadline", "vulnerability", "vulnerabilities", "triage", "secops"
+    ]
 
-    # Routing Logic for Case 1, 2, 3, and Small Talk
-    if any(msg_lower.startswith(g) for g in greetings) or len(msg_lower) < 5:
-        next_step = "conversational_reply"  # Catch small talk before it hits the DB
-    elif "asset" in msg_lower or "server" in msg_lower:
+    # Whitelist Routing Logic for Case 1, 2, 3, and Small Talk / Off-Topic Guardrail
+    if any(k in msg_lower for k in asset_keywords):
         next_step = "asset_check"  # Case 3: Hit the asset database
     elif cve_id:
         next_step = "fetch_nvd"  # Case 1: Vulnerability lookup
-    else:
+    elif any(k in msg_lower for k in policy_keywords):
         next_step = "access_check"  # Case 2: Internal document lookup
+    else:
+        next_step = "conversational_reply"  # Catch greetings and off-topic queries before hitting the DB
 
     return {
         "cve_id": cve_id,
@@ -79,15 +88,25 @@ def router_node(state: AgentState) -> dict:
 
 
 async def conversational_node(state: AgentState) -> dict:
-    prompt = (
-        "You are an enterprise SecOps Vulnerability Management Agent built by Isadora Santos. "
-        "The user just greeted you or asked about your capabilities. "
-        "Introduce yourself briefly, stating you can summarize CVEs, check internal remediation policies, and autonomously draft Jira tickets. "
-        "CRITICAL: You MUST explicitly state that because this is a portfolio demonstration, the user has been granted temporary 'Security Analyst' clearance to explore all restricted features."
+    """Handles greetings, capability inquiries, and off-topic guardrails without querying PGVector."""
+    user_message = state["messages"][-1].content if state.get("messages") else "Hello"
+
+    system_prompt = (
+        "You are an enterprise SecOps Vulnerability Management Agent built by Isadora Santos.\n"
+        "Follow these strict response rules based on the user's message:\n"
+        "1. IF GREETING OR CAPABILITY QUESTION: Introduce yourself briefly, stating you can summarize CVEs via live NIST NVD lookups, "
+        "check internal asset exposure, retrieve corporate remediation SLA policies, and autonomously draft Jira tickets.\n"
+        "2. IF OFF-TOPIC (e.g., weather, general trivia, non-security questions): Politely decline to answer and state that as a "
+        "dedicated SecOps Vulnerability Triage Agent, your operational scope is strictly restricted to vulnerability intelligence, "
+        "internal asset exposure, and corporate remediation policies.\n"
+        "3. CRITICAL REQUIREMENT FOR EVERY RESPONSE: Always conclude by explicitly stating that because this environment is running "
+        "as a portfolio demonstration, the user has been granted temporary 'Security Analyst' clearance to freely explore all "
+        "restricted features, and invite them to enter a CVE ID, asset query, or SLA policy question."
     )
+
     response = await llm.ainvoke([
-        SystemMessage(content="You are a strict but helpful SecOps Agent. Do not hallucinate tools."),
-        HumanMessage(content=prompt)
+        SystemMessage(content=system_prompt),
+        HumanMessage(content=user_message)
     ])
     return {"messages": [response]}
 
@@ -177,11 +196,27 @@ def asset_check_node(state: AgentState) -> dict:
 
 
 async def draft_ticket_node(state: AgentState) -> dict:
-    """Drafts the ticket payload and streams a preview for human approval."""
+    """Explains affected assets to the user first, then drafts the remediation ticket for human approval."""
+    user_query = state["messages"][-1].content if state.get("messages") else ""
+    cve_intel = state.get("cve_intel", "None")
+    policy_context = state.get("policy_context", "None")
+
     prompt = (
-        f"Based on this intel: {state.get('cve_intel')}\n\n"
-        "Draft a highly scannable Markdown preview of the remediation ticket. "
-        "Include the Affected Asset, Severity (using color-coded circles like 🔴 🟠 🟡 🟢), and Required Action.\n\n"
+        f"User Question: {user_query}\n\n"
+        f"Vulnerability & Asset Intelligence:\n{cve_intel}\n\n"
+        f"Internal Policy Context:\n{policy_context}\n\n"
+        "You MUST structure your response in the following exact two-part sequence:\n\n"
+        "PART 1 — CONVERSATIONAL ASSET IMPACT EXPLANATION:\n"
+        "Start with a header '### 🔍 Asset Impact Analysis'.\n"
+        "Directly answer the user's question in clear, conversational prose before showing any ticket. "
+        "Explicitly name the affected internal asset(s) found in the inventory (e.g., `Payment-Gateway-01`), "
+        "explain what software/component on that asset is vulnerable to the CVE, its severity/exposure risk, "
+        "and state: 'Because an active internal asset is impacted by this vulnerability, I have automatically "
+        "prepared the following remediation ticket draft for your review and approval.'\n\n"
+        "PART 2 — REMEDIATION TICKET DRAFT:\n"
+        "Add a horizontal divider (`---`) followed by the header '### 🛡️ Remediation Ticket Draft'.\n"
+        "Present a clean Markdown table and description including the Ticket ID, Title, Affected Asset, "
+        "Vulnerability, Severity (using color-coded circles 🔴 🟠 🟡 🟢), and Required Action based on SLA policy.\n\n"
         "DEMO DISCLAIMER: Conclude the ticket description with this exact italicized line:\n"
         "'*Note: This automated ticket was generated via Portfolio Demo Mode.*'\n\n"
         "You MUST conclude your entire response with this exact text block:\n"
@@ -190,7 +225,7 @@ async def draft_ticket_node(state: AgentState) -> dict:
     )
 
     response = await llm.ainvoke([
-        SystemMessage(content="You are a SecOps ticket drafter."),
+        SystemMessage(content="You are an enterprise SecOps analyst who clearly explains asset exposure before presenting a ticket draft."),
         HumanMessage(content=prompt)
     ])
     return {"messages": [response]}

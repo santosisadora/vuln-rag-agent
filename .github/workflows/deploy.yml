@@ -77,6 +77,6 @@ jobs:
         uses: aws-actions/amazon-ecs-deploy-task-definition@v1
         with:
           task-definition: ${{ steps.task-def.outputs.task-definition }}
-          service: secops-triage-service
+          service: secops-triage-task-service-4mjftlhp
           cluster: security-cluster
           wait-for-service-stability: true

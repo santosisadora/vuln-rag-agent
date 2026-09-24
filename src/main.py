@@ -1,4 +1,5 @@
 import os
+import re
 import json
 import traceback
 import subprocess
@@ -141,17 +142,35 @@ async def event_generator(payload: TriageRequest):
     """Generates a Server-Sent Event (SSE) stream from LangGraph execution."""
     config = {"configurable": {"thread_id": payload.thread_id}}
 
-    # Detect HITL approval: resume the interrupted graph instead of starting fresh
-    APPROVAL_KEYWORDS = {"approve", "approved", "yes", "confirm"}
-    is_approval = payload.query.strip().lower() in APPROVAL_KEYWORDS
+    # 1. Detect HITL approval in both single words ("approve") and full phrases ("i want to approve")
+    query_clean = payload.query.strip().lower()
+    approval_pattern = r"\b(approve|approved|approving|yes|confirm|confirmed|proceed|go ahead)\b"
+    rejection_pattern = r"\b(no|not|dont|don't|cancel|reject|stop)\b"
 
-    if is_approval:
-        # Resume from the interrupt_before=["create_ticket"] checkpoint
-        inputs = None
-    else:
-        inputs = {"messages": [HumanMessage(content=payload.query)]}
+    is_approval = bool(re.search(approval_pattern, query_clean)) and not bool(re.search(rejection_pattern, query_clean))
 
     try:
+        # 2. Check if the current thread has a paused checkpoint waiting at create_ticket
+        current_state = await agent_app.aget_state(config)
+        is_waiting_for_approval = bool(
+            current_state and current_state.next and "create_ticket" in current_state.next
+        )
+
+        if is_approval and is_waiting_for_approval:
+            # Resume from the interrupt_before=["create_ticket"] checkpoint
+            inputs = None
+        elif is_approval and not is_waiting_for_approval:
+            # Guardrail: prevent accidental routing to the SLA policy if no ticket draft is paused
+            msg = (
+                "ℹ️ No pending ticket draft is waiting for approval in this thread. "
+                "Ask about an affected asset or CVE first to generate a remediation draft."
+            )
+            yield f"data: {json.dumps({'type': 'token', 'content': msg})}\n\n"
+            yield f"data: {json.dumps({'type': 'done'})}\n\n"
+            return
+        else:
+            inputs = {"messages": [HumanMessage(content=payload.query)]}
+
         # Switch from astream_events to standard astream to grab node outputs reliably
         async for output in agent_app.astream(inputs, config=config, stream_mode="updates"):
 
