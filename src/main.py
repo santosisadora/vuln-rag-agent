@@ -112,8 +112,11 @@ app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 # Add CORS Middleware to allow the browser UI to connect
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://isadora-santos-vuln-rag-agent.s3-website-us-east-1.amazonaws.com",
-                   "http://localhost:8501"],
+    allow_origins=[
+        "http://isadora-santos-vuln-rag-agent.s3-website-us-east-1.amazonaws.com",
+        "https://dvd40fbcl8i24.cloudfront.net",
+        "http://localhost:8501"
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -158,8 +161,8 @@ async def event_generator(payload: TriageRequest):
                 # 1. Broadcast Node Transitions so UI shows progress
                 yield f"data: {json.dumps({'type': 'node', 'content': f'Node [{node_name}] completed.'})}\n\n"
 
-                # 2. Grab the final output from the formatter OR the create_ticket node
-                if node_name in ["formatter", "draft_ticket", "create_ticket"]:
+                # 2. Grab the final output from the formatter, draft_ticket, create_ticket, OR conversational_reply node
+                if node_name in ["formatter", "draft_ticket", "create_ticket", "conversational_reply"]:
                     try:
                         # Try to extract standard LangChain message content
                         final_text = node_state["messages"][-1].content
