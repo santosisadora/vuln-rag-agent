@@ -1,4 +1,5 @@
 ![CI/CD Pipeline](https://github.com/santosisadora/vuln-rag-agent/actions/workflows/deploy.yml/badge.svg?branch=main)
+[![Live Agent](https://img.shields.io/badge/Live_Agent-secops.isadorasantos.app-00d2ff?style=flat)](https://secops.isadorasantos.app)
 
 # SecOps Vulnerability Triage Agent (vuln-rag-agent)
 
