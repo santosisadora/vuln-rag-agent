@@ -1,4 +1,4 @@
-![CI/CD Pipeline](https://github.com/YOUR_GITHUB_USERNAME/vuln-rag-agent/actions/workflows/deploy.yml/badge.svg?branch=main)
+![CI/CD Pipeline](https://github.com/santosisadora/vuln-rag-agent/actions/workflows/deploy.yml/badge.svg?branch=main)
 
 # SecOps Vulnerability Triage Agent (vuln-rag-agent)
 
