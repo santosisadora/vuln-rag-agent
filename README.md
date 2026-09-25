@@ -1,3 +1,5 @@
+![CI/CD Pipeline](https://github.com/YOUR_GITHUB_USERNAME/vuln-rag-agent/actions/workflows/deploy.yml/badge.svg?branch=main)
+
 # SecOps Vulnerability Triage Agent (vuln-rag-agent)
 
 An agentic Retrieval-Augmented Generation (RAG) pipeline designed to automate security operations (SecOps) vulnerability triage. Built with LangGraph and FastAPI, this agent analyzes CVEs against internal policies, determines severity, assigns SLA deadlines, and drafts actionable security tickets with a Human-in-the-Loop (HITL) approval process.
